@@ -52,7 +52,7 @@ def compute_log_loss_per_class(src):
 
 
 def test_log_loss_per_class():
-    from rsna19.configs.second_level import Config
+    from configs.second_level import Config
     avg_loss = compute_log_loss(Config().prediction_paths[0])
     losses = compute_log_loss_per_class(Config().prediction_paths[0])
     losses.append(losses[-1])

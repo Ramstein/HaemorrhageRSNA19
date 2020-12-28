@@ -13,7 +13,7 @@ from torch.utils.data import Dataset
 from tqdm import tqdm
 
 from preprocessing import hu_converter
-from rsna19.configs.base_config import BaseConfig
+from configs.base_config import BaseConfig
 
 SliceInfo = collections.namedtuple('SliceInfo', 'study_id slice_num path labels')
 

@@ -7,7 +7,7 @@ import numpy as np
 import nibabel
 import pandas as pd
 
-from rsna19.configs.base_config import BaseConfig
+from configs.base_config import BaseConfig
 
 
 MASKS_QUERY = BaseConfig.data_root + "/train/*/Untitled.nii.gz"

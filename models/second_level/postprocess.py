@@ -1,6 +1,6 @@
 from pathlib import Path
-from rsna19.configs.second_level import Config
-from rsna19.models.smoothing.utils import compute_log_loss, compute_log_loss_per_class, smooth_predictions
+from configs.second_level import Config
+from models.smoothing.utils import compute_log_loss, compute_log_loss_per_class, smooth_predictions
 from glob import glob
 import pandas as pd
 import numpy as np

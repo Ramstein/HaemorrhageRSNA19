@@ -1,7 +1,7 @@
 import glob
 
-from rsna19.configs import get_train_folds, get_val_folds_str
-from rsna19.configs.clf2Dc_resnet34_3x3 import Config as ParentConfig
+from configs import get_train_folds, get_val_folds_str
+from configs.clf2Dc_resnet34_3x3 import Config as ParentConfig
 
 
 class Config(ParentConfig):

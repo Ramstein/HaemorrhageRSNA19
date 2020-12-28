@@ -7,11 +7,11 @@ import numpy as np
 import cv2
 from torch.utils.data import DataLoader
 
-from rsna19.data.dataset_seg import IntracranialDataset
-from rsna19.models.seg.segmentation_model import SegmentationModel
-from rsna19.configs.segmentation_config import Config
-from rsna19.configs import load
-from rsna19.data.utils import draw_seg, draw_labels
+from data.dataset_seg import IntracranialDataset
+from models.seg.segmentation_model import SegmentationModel
+from configs.segmentation_config import Config
+from configs import load
+from data.utils import draw_seg, draw_labels
 
 
 MODEL = '/kolos/m2/ct/models/classification/rsna/seg0001_ours/1234/version_2/models/_ckpt_epoch_35.ckpt'

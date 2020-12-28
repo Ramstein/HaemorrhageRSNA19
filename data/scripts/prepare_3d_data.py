@@ -19,9 +19,9 @@ from vtk import vtkImageCast, vtkImageResample, vtkDICOMImageReader
 from vtk.util.numpy_support import vtk_to_numpy
 import tqdm
 
-from rsna19.configs.base_config import BaseConfig
-from rsna19.data.utils import crop_scan
-from rsna19.preprocessing.pydicom_loader import PydicomLoader
+from configs.base_config import BaseConfig
+from data.utils import crop_scan
+from preprocessing.pydicom_loader import PydicomLoader
 
 ShearParams = namedtuple('ShearParams', 'rad_tilt, minus_center_z')
 OUT_SIZE = (400, 400)

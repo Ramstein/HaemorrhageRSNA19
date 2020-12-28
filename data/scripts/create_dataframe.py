@@ -10,7 +10,7 @@ import pandas
 import pydicom
 from tqdm import tqdm
 
-from rsna19.configs.base_config import BaseConfig
+from configs.base_config import BaseConfig
 
 # path under which new directory structure will be created
 DF_PATH_OUT = os.path.join(BaseConfig.data_root, 'df.pkl')

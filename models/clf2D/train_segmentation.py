@@ -9,7 +9,7 @@ from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
 from tqdm import tqdm
-from rsna19.data import dataset
+from data import dataset
 import albumentations
 import albumentations.pytorch
 import cv2
@@ -18,10 +18,10 @@ import sklearn.metrics
 
 import torch.nn as nn
 import torch.nn.functional as F
-from rsna19.configs.base_config import BaseConfig
-from rsna19.models.commons import radam
-from rsna19.models.commons import metrics
-from rsna19.models.clf2D.experiments import MODELS
+from configs.base_config import BaseConfig
+from models.commons import radam
+from models.commons import metrics
+from models.clf2D.experiments import MODELS
 from torch.utils.tensorboard import SummaryWriter
 
 

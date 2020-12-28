@@ -3,7 +3,7 @@ import os
 import numpy as np
 import pydicom
 
-from rsna19.preprocessing.hu_converter import HuConverter
+from preprocessing.hu_converter import HuConverter
 
 
 class PydicomLoader:

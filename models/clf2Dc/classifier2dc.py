@@ -9,13 +9,13 @@ from torch.optim.lr_scheduler import CosineAnnealingLR, LambdaLR
 from torch.utils.data import DataLoader
 import numpy as np
 
-from rsna19.data.dataset_2dc import IntracranialDataset
-from rsna19.models.commons.attention import ContextualAttention, SpatialAttention
-from rsna19.models.commons.balancing_sampler import BalancedBatchSampler
-import rsna19.models.commons.metrics as metrics
-from rsna19.models.commons.radam import RAdam
-from rsna19.models.commons.concat_pool import concat_pool
-from rsna19.models.commons.get_base_model import get_base_model
+from data.dataset_2dc import IntracranialDataset
+from models.commons.attention import ContextualAttention, SpatialAttention
+from models.commons.balancing_sampler import BalancedBatchSampler
+import models.commons.metrics as metrics
+from models.commons.radam import RAdam
+from models.commons.concat_pool import concat_pool
+from models.commons.get_base_model import get_base_model
 
 
 class Classifier2DC(pl.LightningModule):

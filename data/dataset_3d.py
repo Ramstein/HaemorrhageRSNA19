@@ -1,4 +1,4 @@
-from rsna19.data.dataset_2dc import IntracranialDataset
+from data.dataset_2dc import IntracranialDataset
 
 import numpy as np
 import cv2
@@ -21,7 +21,7 @@ class IntracranialDataset3D(IntracranialDataset):
 
 
 def main():
-    from rsna19.configs.clf2Dc import Config
+    from configs.clf2Dc import Config
 
     for x in IntracranialDataset3D(Config(), folds=[0, 1, 2, 3], augment=True):
         print(x['image'].shape)

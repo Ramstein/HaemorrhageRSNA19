@@ -7,13 +7,13 @@ from tqdm import tqdm
 import numpy as np
 import pandas as pd
 
-from rsna19.data import dataset_3d_v2
-from rsna19.configs.base_config import BaseConfig
-from rsna19.models.clf3D.experiments_3d import MODELS
-from rsna19.models.clf2D.train import build_model_str
+from data import dataset_3d_v2
+from configs.base_config import BaseConfig
+from models.clf3D.experiments_3d import MODELS
+from models.clf2D.train import build_model_str
 import albumentations
 import albumentations.pytorch
-from rsna19.models.clf2D.predict import Rotate90
+from models.clf2D.predict import Rotate90
 
 # import ttach as tta
 

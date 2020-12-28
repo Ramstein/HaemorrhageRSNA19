@@ -10,10 +10,10 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from rsna19.configs.base_config import BaseConfig
-from rsna19.data import dataset
-from rsna19.models.clf2D.experiments import MODELS
-from rsna19.models.clf2D.train import build_model_str
+from configs.base_config import BaseConfig
+from data import dataset
+from models.clf2D.experiments import MODELS
+from models.clf2D.train import build_model_str
 
 
 # import ttach as tta

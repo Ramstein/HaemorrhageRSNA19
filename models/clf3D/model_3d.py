@@ -589,7 +589,7 @@ class WSO(nn.Module):
 
 
 def check_wso():
-    from rsna19.data import dataset
+    from data import dataset
     import albumentations.pytorch
     from torch.utils.data import DataLoader
     import matplotlib.pyplot as plt

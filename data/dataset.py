@@ -12,9 +12,9 @@ from torch.utils.data import Dataset
 from tqdm import tqdm
 
 from preprocessing import hu_converter
-from rsna19.configs.base_config import BaseConfig
+from configs.base_config import BaseConfig
 
-from rsna19.data.utils import load_seg_slice, timeit_context, load_seg_3d
+from data.utils import load_seg_slice, timeit_context, load_seg_3d
 
 
 class IntracranialDataset(Dataset):

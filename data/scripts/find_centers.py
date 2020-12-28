@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from rsna19.configs.base_config import BaseConfig
+from configs.base_config import BaseConfig
 import scipy.ndimage
 from tqdm import tqdm
 import os

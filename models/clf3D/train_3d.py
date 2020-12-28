@@ -11,20 +11,20 @@ from torch.optim import lr_scheduler
 from torch.utils.data import DataLoader
 from torchvision import datasets, models, transforms
 from tqdm import tqdm
-from rsna19.data import dataset, dataset_3d_v2
+from data import dataset, dataset_3d_v2
 import albumentations
 import albumentations.pytorch
 import cv2
 import matplotlib.pyplot as plt
 import torch.nn as nn
 import torch.nn.functional as F
-from rsna19.configs.base_config import BaseConfig
-from rsna19.models.commons import radam
-from rsna19.models.clf3D.experiments_3d import MODELS
+from configs.base_config import BaseConfig
+from models.commons import radam
+from models.clf3D.experiments_3d import MODELS
 from torch.utils.tensorboard import SummaryWriter
 import math
 
-from rsna19.models.clf2D.train import build_model_str, log_metrics
+from models.clf2D.train import build_model_str, log_metrics
 
 
 class CosineAnnealingLRWithRestarts(torch.optim.lr_scheduler._LRScheduler):

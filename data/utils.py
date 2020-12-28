@@ -16,7 +16,7 @@ import time
 from contextlib import contextmanager
 
 
-from rsna19.configs.base_config import BaseConfig
+from configs.base_config import BaseConfig
 
 DICOM_TAGS_DF_PATH = '/kolos/m2/ct/data/rsna/df.pkl'
 HU_AIR = -1000

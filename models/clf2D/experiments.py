@@ -1,4 +1,4 @@
-from rsna19.models.clf2D import model_2d, model_2dc, model_2dc_segmentation
+from models.clf2D import model_2d, model_2dc, model_2dc_segmentation
 from models.clf3D import model_3d
 
 

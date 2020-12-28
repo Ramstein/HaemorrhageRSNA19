@@ -11,8 +11,8 @@ import albumentations
 import albumentations.pytorch
 import cv2
 
-from rsna19.data.utils import normalize_train, load_scan_2dc, load_seg_masks_2dc
-from rsna19.preprocessing.hu_converter import HuConverter
+from data.utils import normalize_train, load_scan_2dc, load_seg_masks_2dc
+from preprocessing.hu_converter import HuConverter
 
 
 class IntracranialDataset(Dataset):
@@ -158,7 +158,7 @@ class IntracranialDataset(Dataset):
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    from rsna19.configs.clf2Dc import Config as config
+    from configs.clf2Dc import Config as config
 
     dataset = IntracranialDataset(config, [0], augment=True)
     show_all_slices = False

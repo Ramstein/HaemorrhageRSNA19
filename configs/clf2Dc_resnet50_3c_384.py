@@ -1,5 +1,5 @@
-from rsna19.configs import get_train_folds, get_val_folds_str
-from rsna19.configs.base_config import BaseConfig
+from configs import get_train_folds, get_val_folds_str
+from configs.base_config import BaseConfig
 
 
 class Config(BaseConfig):

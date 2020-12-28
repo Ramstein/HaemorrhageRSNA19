@@ -1,4 +1,4 @@
-from rsna19.configs.base_config import BaseConfig
+from configs.base_config import BaseConfig
 
 
 class Config(BaseConfig):

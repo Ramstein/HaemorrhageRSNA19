@@ -12,7 +12,7 @@ import numpy as np
 import pandas
 from tqdm import tqdm
 
-from rsna19.configs.base_config import BaseConfig
+from configs.base_config import BaseConfig
 
 DF_PATHS_IN = [
     os.path.join(BaseConfig.data_root, 'df.pkl'),

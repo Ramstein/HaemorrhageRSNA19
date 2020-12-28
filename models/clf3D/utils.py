@@ -1,6 +1,6 @@
 import torch
 from torch import nn
-from rsna19.models.clf3D import resnet
+from models.clf3D import resnet
 
 
 def generate_model(config):

@@ -5,9 +5,9 @@ from torch.utils.data import DataLoader
 
 import segmentation_models_pytorch as smp
 
-from rsna19.data.dataset_seg import IntracranialDataset
-from rsna19.models.commons.get_base_model import load_base_weights
-from rsna19.models.commons.radam import RAdam
+from data.dataset_seg import IntracranialDataset
+from models.commons.get_base_model import load_base_weights
+from models.commons.radam import RAdam
 
 
 class SegmentationModel(pl.LightningModule):

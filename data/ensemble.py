@@ -3,7 +3,7 @@ import glob
 import pandas as pd
 from tqdm import tqdm
 
-from rsna19.configs.base_config import BaseConfig
+from configs.base_config import BaseConfig
 
 
 PREDICTIONS_QUERY = BaseConfig.model_outdir + '/*/*/predictions_stage2'

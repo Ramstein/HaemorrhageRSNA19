@@ -6,8 +6,8 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from test_tube import Experiment
 
-from rsna19.models.clf2Dc.classifier2dc import Classifier2DC
-from rsna19.configs.clf2Dc import Config
+from models.clf2Dc.classifier2dc import Classifier2DC
+from configs.clf2Dc import Config
 
 
 def main():

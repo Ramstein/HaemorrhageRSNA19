@@ -7,7 +7,7 @@ import numpy as np
 import os
 import tqdm
 
-from rsna19.configs.base_config import BaseConfig as config
+from configs.base_config import BaseConfig as config
 
 WORKERS = 12
 

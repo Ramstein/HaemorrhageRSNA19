@@ -11,8 +11,8 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
-from rsna19.data.utils import normalize_train, load_scan_2dc, draw_seg, load_seg_slice
-from rsna19.preprocessing.hu_converter import HuConverter
+from data.utils import normalize_train, load_scan_2dc, draw_seg, load_seg_slice
+from preprocessing.hu_converter import HuConverter
 
 
 class IntracranialDataset(Dataset):
@@ -206,7 +206,7 @@ class IntracranialDataset(Dataset):
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    from rsna19.configs.segmentation_config import Config as config
+    from configs.segmentation_config import Config as config
 
     dataset = IntracranialDataset(config, [0, 1, 2, 3], augment=True)
 

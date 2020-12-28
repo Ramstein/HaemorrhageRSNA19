@@ -13,9 +13,9 @@ from torch.nn import functional as F
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from rsna19.configs.base_config import BaseConfig
-from rsna19.data.dataset_2dc import IntracranialDataset
-from rsna19.models.clf2Dc.classifier2dc import Classifier2DC
+from configs.base_config import BaseConfig
+from data.dataset_2dc import IntracranialDataset
+from models.clf2Dc.classifier2dc import Classifier2DC
 
 
 VAL_SET = '5fold.csv'

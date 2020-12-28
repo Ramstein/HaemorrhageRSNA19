@@ -6,8 +6,8 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from test_tube import Experiment
 
-from rsna19.models.seg.segmentation_model import SegmentationModel
-from rsna19.configs.segmentation_config import Config
+from models.seg.segmentation_model import SegmentationModel
+from configs.segmentation_config import Config
 
 
 def main():

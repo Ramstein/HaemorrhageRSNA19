@@ -8,11 +8,11 @@ from torch.utils.data import DataLoader
 import numpy as np
 from copy import deepcopy
 
-from rsna19.data.dataset_3d import IntracranialDataset3D
-from rsna19.models.commons.balancing_sampler import BalancedBatchSampler
-import rsna19.models.commons.metrics as metrics
-from rsna19.models.commons.radam import RAdam
-from rsna19.models.clf3D.utils import generate_model
+from data.dataset_3d import IntracranialDataset3D
+from models.commons.balancing_sampler import BalancedBatchSampler
+import models.commons.metrics as metrics
+from models.commons.radam import RAdam
+from models.clf3D.utils import generate_model
 
 
 class MedicalNetModule(pl.LightningModule):

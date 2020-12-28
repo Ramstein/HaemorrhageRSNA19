@@ -2,7 +2,7 @@ import torch
 from torch.nn import functional as F
 import numpy as np
 from tqdm import tqdm
-from rsna19.configs.second_level import Config
+from configs.second_level import Config
 from sklearn.metrics import log_loss
 
 

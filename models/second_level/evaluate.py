@@ -1,8 +1,8 @@
 from multiprocessing import Pool
 
 from pathlib import Path
-from rsna19.configs.second_level import Config
-from rsna19.models.smoothing.utils import compute_log_loss, smooth_predictions
+from configs.second_level import Config
+from models.smoothing.utils import compute_log_loss, smooth_predictions
 from glob import glob
 from tqdm import tqdm
 
