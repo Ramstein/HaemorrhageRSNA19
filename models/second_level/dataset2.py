@@ -1,11 +1,13 @@
 import os
 from glob import glob
+
 import numpy as np
 import pandas as pd
 from more_itertools import windowed, flatten
-from configs.second_level import Config
 from sklearn.metrics import log_loss
 from tqdm import tqdm
+
+from configs.second_level import Config
 
 
 def main(config):

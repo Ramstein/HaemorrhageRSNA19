@@ -1,28 +1,24 @@
 import argparse
-import collections
 import os
 
-import numpy as np
-import torch
-import torch.optim as optim
-from torch.optim import lr_scheduler
-from torch.utils.data import DataLoader
-from torchvision import datasets, models, transforms
-from tqdm import tqdm
-from data import dataset
 import albumentations
 import albumentations.pytorch
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
 import sklearn.metrics
-
-import torch.nn as nn
+import torch
 import torch.nn.functional as F
-from configs.base_config import BaseConfig
-from models.commons import radam
-from models.commons import metrics
-from models.clf2D.experiments import MODELS
+import torch.optim as optim
+from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
+
+from configs.base_config import BaseConfig
+from data import dataset
+from models.clf2D.experiments import MODELS
+from models.commons import metrics
+from models.commons import radam
 
 
 def build_model_str(model_name, fold, run):
@@ -84,7 +80,7 @@ def train(model_name, fold, run=None, resume_epoch=-1):
         csv_file='5fold-rev3.csv',
         folds=[f for f in range(BaseConfig.nb_folds) if f != fold],
         preprocess_func=albumentations.Compose([
-            albumentations.ShiftScaleRotate(shift_limit=16./256, scale_limit=0.05, rotate_limit=30,
+            albumentations.ShiftScaleRotate(shift_limit=16. / 256, scale_limit=0.05, rotate_limit=30,
                                             interpolation=cv2.INTER_LINEAR,
                                             border_mode=cv2.BORDER_REPLICATE,
                                             p=0.7),
@@ -106,10 +102,10 @@ def train(model_name, fold, run=None, resume_epoch=-1):
                             num_workers=8,
                             shuffle=True,
                             batch_size=model_info.batch_size),
-        'val':   DataLoader(dataset_valid,
-                            shuffle=False,
-                            num_workers=8,
-                            batch_size=model_info.batch_size)
+        'val': DataLoader(dataset_valid,
+                          shuffle=False,
+                          num_workers=8,
+                          batch_size=model_info.batch_size)
     }
 
     dataset_train_1_slice = None
@@ -132,7 +128,7 @@ def train(model_name, fold, run=None, resume_epoch=-1):
             csv_file='5fold.csv',
             folds=[fold],
             preprocess_func=None,
-            **{**model_info.dataset_args, "num_slices": 1, "segmentation_oversample" : 1}
+            **{**model_info.dataset_args, "num_slices": 1, "segmentation_oversample": 1}
         )
 
         data_loaders['train_1_slice'] = DataLoader(
@@ -164,7 +160,7 @@ def train(model_name, fold, run=None, resume_epoch=-1):
 
     class_weights = torch.tensor([1.0, 1.0, 1.0, 1.0, 1.0, 2.0]).cuda()
 
-    def criterium(y_pred,y_true):
+    def criterium(y_pred, y_true):
         return F.binary_cross_entropy_with_logits(y_pred, y_true, class_weights.repeat(y_pred.shape[0], 1))
 
     def criterium_mask(y_pred, y_true, have_segmentation):
@@ -206,11 +202,12 @@ def train(model_name, fold, run=None, resume_epoch=-1):
                 if have_any_segmentation:
                     epoch_loss_mask.append(float(loss_mask))
 
-                data_iter.set_description(f'Loss: Running {np.mean(epoch_loss[-500:]):1.4f} Avg {np.mean(epoch_loss):1.4f}' +
-                                          f' Running mask {np.mean(epoch_loss_mask[-500:]):1.4f} Mask {np.mean(epoch_loss_mask):1.4f}')
+                data_iter.set_description(
+                    f'Loss: Running {np.mean(epoch_loss[-500:]):1.4f} Avg {np.mean(epoch_loss):1.4f}' +
+                    f' Running mask {np.mean(epoch_loss_mask[-500:]):1.4f} Mask {np.mean(epoch_loss_mask):1.4f}')
     model.module.unfreeze_encoder()
 
-    for epoch_num in range(resume_epoch+1, 8):
+    for epoch_num in range(resume_epoch + 1, 8):
         if epoch_num > 3 and dataset_train_1_slice is not None:
             dataset_train_1_slice.segmentation_oversample = 1
 
@@ -226,7 +223,7 @@ def train(model_name, fold, run=None, resume_epoch=-1):
                 model.module.on_epoch(epoch_num)
 
             if epoch_num < model_info.single_slice_steps:
-                data_loader = data_loaders[phase+'_1_slice']
+                data_loader = data_loaders[phase + '_1_slice']
                 print("use 1 slice input")
             else:
                 data_loader = data_loaders[phase]
@@ -337,9 +334,9 @@ def check_heatmap(model_name, fold, epoch, run=None):
     batch_size = 1
 
     data_loader = DataLoader(dataset_valid,
-                          shuffle=False,
-                          num_workers=16,
-                          batch_size=batch_size)
+                             shuffle=False,
+                             num_workers=16,
+                             batch_size=batch_size)
 
     data_iter = tqdm(enumerate(data_loader), total=len(data_loader))
     for iter_num, data in data_iter:
@@ -394,14 +391,14 @@ def check_windows(model_name, fold, epoch, run=None):
     b = model.windows_conv.bias.detach().cpu().numpy()
     print(w, b)
     for wi, bi in zip(w, b):
-        print(f'{-int(bi/wi*1000)} +- {int(abs(1000/wi))}')
+        print(f'{-int(bi / wi * 1000)} +- {int(abs(1000 / wi))}')
 
     batch_size = 1
 
     data_loader = DataLoader(dataset_valid,
-                          shuffle=False,
-                          num_workers=16,
-                          batch_size=batch_size)
+                             shuffle=False,
+                             num_workers=16,
+                             batch_size=batch_size)
 
     data_iter = tqdm(enumerate(data_loader), total=len(data_loader))
     for iter_num, data in data_iter:
@@ -418,7 +415,7 @@ def check_windows(model_name, fold, epoch, run=None):
                 print(labels[batch], data['path'][batch])
                 for j in range(4):
                     for k in range(4):
-                        ax[j, k].imshow(windowed_img[batch, j*4+k], cmap='gray')
+                        ax[j, k].imshow(windowed_img[batch, j * 4 + k], cmap='gray')
 
             plt.show()
 
@@ -467,7 +464,7 @@ def check_score(model_name, fold, epoch, run=None):
     loss = np.mean(loss, axis=1)
 
     # plt.hist(loss, bins=1024)
-    plt.plot(np.sort(-1*loss)*-1)
+    plt.plot(np.sort(-1 * loss) * -1)
     plt.axvline()
     plt.axhline()
     plt.show()

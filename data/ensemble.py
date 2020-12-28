@@ -5,7 +5,6 @@ from tqdm import tqdm
 
 from configs.base_config import BaseConfig
 
-
 PREDICTIONS_QUERY = BaseConfig.model_outdir + '/*/*/predictions_stage2'
 SMOOTHEN = False
 OUT = 'ensemble.csv'

@@ -1,18 +1,17 @@
 import os
 from pathlib import Path
 
-from tqdm import tqdm
-import torch
-import numpy as np
 import cv2
+import numpy as np
+import torch
 from torch.utils.data import DataLoader
+from tqdm import tqdm
 
-from data.dataset_seg import IntracranialDataset
-from models.seg.segmentation_model import SegmentationModel
-from configs.segmentation_config import Config
 from configs import load
+from configs.segmentation_config import Config
+from data.dataset_seg import IntracranialDataset
 from data.utils import draw_seg, draw_labels
-
+from models.seg.segmentation_model import SegmentationModel
 
 MODEL = '/kolos/m2/ct/models/classification/rsna/seg0001_ours/1234/version_2/models/_ckpt_epoch_35.ckpt'
 # MODEL = '/kolos/m2/ct/models/classification/rsna/seg0001_ours/0234/version_2/models/_ckpt_epoch_48.ckpt'
@@ -69,7 +68,6 @@ def main():
         y_batched = prediction_model(batch['image'].to(torch.device(GPU))).detach().cpu().numpy()
 
         for i, img in enumerate(batch['image']):
-
             img = np.uint8((img.numpy()[config.num_slices // 2] + 1) * 127.5)
             img_rgb = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
             draw_labels(img_rgb, batch['labels'][i] > 0.5)
@@ -84,7 +82,7 @@ def main():
             out_dir = OUT_DIR.format(folds=val_folds_str)
             save_dir = Path(out_dir)
             os.makedirs(save_dir, exist_ok=True)
-            cv2.imwrite(str(save_dir/f'{counter:05d}_{path.parts[-3]}_{Path(path.parts[-1]).stem}.png'), drawing)
+            cv2.imwrite(str(save_dir / f'{counter:05d}_{path.parts[-3]}_{Path(path.parts[-1]).stem}.png'), drawing)
             # cv2.imshow('img', drawing)
             # cv2.waitKey()
             counter += 1

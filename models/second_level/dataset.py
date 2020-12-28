@@ -1,11 +1,13 @@
 import os
 from glob import glob
+
 import numpy as np
 import pandas as pd
 from more_itertools import windowed, flatten
-from configs.second_level import Config
 from sklearn.metrics import log_loss
 from tqdm import tqdm
+
+from configs.second_level import Config
 
 
 def main(config):
@@ -43,7 +45,7 @@ def create_dataset(config):
         df_areas = pd.read_csv(config.seg_areas_path)
 
         # Merge and standardize mask areas
-        df = pd.merge(df, df_areas,  how='left', left_on=['study_id', 'slice_num'], right_on=['id', 'slice_number'])
+        df = pd.merge(df, df_areas, how='left', left_on=['study_id', 'slice_num'], right_on=['id', 'slice_number'])
         df.area = (df.area - df.area.mean()) / df.area.std()
 
         if i == 0:
@@ -51,8 +53,8 @@ def create_dataset(config):
             study_ids = df.study_id.unique()
             np.random.shuffle(study_ids)
 
-            train_ids = study_ids[:len(study_ids)//2]
-            val_ids = study_ids[len(study_ids)//2:]
+            train_ids = study_ids[:len(study_ids) // 2]
+            val_ids = study_ids[len(study_ids) // 2:]
 
         train_df = df[df.study_id.isin(train_ids)]
         val_df = df[df.study_id.isin(val_ids)]
@@ -62,8 +64,10 @@ def create_dataset(config):
         val_gt = val_df[config.gt_columns].to_numpy()
         val_pred = val_df[config.pred_columns].to_numpy()
 
-        train_log_loss = log_loss(train_gt.flatten(), train_pred.flatten(), sample_weight=config.class_weights * train_gt.shape[0])
-        val_log_loss = log_loss(val_gt.flatten(), val_pred.flatten(), sample_weight=config.class_weights * val_gt.shape[0])
+        train_log_loss = log_loss(train_gt.flatten(), train_pred.flatten(),
+                                  sample_weight=config.class_weights * train_gt.shape[0])
+        val_log_loss = log_loss(val_gt.flatten(), val_pred.flatten(),
+                                sample_weight=config.class_weights * val_gt.shape[0])
         print(f'{train_log_loss}, {val_log_loss}')
 
         train_x, train_y = create_split(train_df, train_ids, config)

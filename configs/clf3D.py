@@ -11,7 +11,7 @@ class Config(BaseConfig):
 
     backbone = 'resnet18'
     pretrained = '/home/ec2-user/SageMaker/rsna/pretrained_3d/resnet18_23dataset.pth'
-    resnet_shortcut = 'A'   # 'A' or 'B'
+    resnet_shortcut = 'A'  # 'A' or 'B'
     new_layer_names = ['fc']
 
     lr = 1e-4

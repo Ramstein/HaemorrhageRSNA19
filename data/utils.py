@@ -1,20 +1,18 @@
+import json
 import os
+import pickle
+import time
+from contextlib import contextmanager
+from math import atan
 from pathlib import Path
 
 import cv2
-import json
-import pickle
-from math import atan
-
 import nibabel as nib
 import numpy as np
 import pandas as pd
 import skimage
 import transforms3d
 from scipy import ndimage
-import time
-from contextlib import contextmanager
-
 
 from configs.base_config import BaseConfig
 
@@ -87,7 +85,8 @@ def load_seg_masks_2dc(middle_img_path, slices_indices, slice_size):
             mask_img = np.zeros((slice_size, slice_size), dtype=np.uint8)
         else:
             exam_id = middle_img_path.parts[-3]
-            mask_path = Path(SEG_MASKS_HOME)/"data/rsna/train"/exam_id/"masks/cropped400/any/"/'{:03d}.png'.format(img_num)
+            mask_path = Path(
+                SEG_MASKS_HOME) / "data/rsna/train" / exam_id / "masks/cropped400/any/" / '{:03d}.png'.format(img_num)
             mask_img = cv2.imread(str(mask_path), cv2.IMREAD_GRAYSCALE)
             if mask_img is None:
                 print("Error loading mask: ", mask_path)

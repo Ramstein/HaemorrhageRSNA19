@@ -1,11 +1,14 @@
-import pandas as pd
+import glob
+import os
+from multiprocessing import Pool
+
 import numpy as np
-from configs.base_config import BaseConfig
+import pandas as pd
 import scipy.ndimage
 from tqdm import tqdm
-import os
-import glob
-from multiprocessing import Pool
+
+from configs.base_config import BaseConfig
+
 WORKERS = 8
 
 
@@ -38,11 +41,13 @@ def find_centers(samples_dir):
 
     return df
 
+
 def main():
     # find_centers(BaseConfig.data_root + '/train').to_csv('data/csv/train_centers.csv', index=False)
     # find_centers(BaseConfig.data_root + '/test').to_csv('data/csv/test_centers.csv', index=False)
 
     find_instance_centers(BaseConfig.data_root + '/train/' + 'ID_b26cbdc518')
+
 
 if __name__ == "__main__":
     main()

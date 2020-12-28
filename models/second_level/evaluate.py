@@ -1,10 +1,11 @@
-from multiprocessing import Pool
-
-from pathlib import Path
-from configs.second_level import Config
-from models.smoothing.utils import compute_log_loss, smooth_predictions
 from glob import glob
+from multiprocessing import Pool
+from pathlib import Path
+
+from models.smoothing.utils import compute_log_loss, smooth_predictions
 from tqdm import tqdm
+
+from configs.second_level import Config
 
 
 def path_generator(config):
@@ -33,7 +34,7 @@ def main(config):
     with Pool(8) as p:
         paths = list(path_generator(config))
         diffs = list(tqdm(p.imap(worker, paths), total=len(paths)))
-        print(sum(diffs)/len(diffs))
+        print(sum(diffs) / len(diffs))
 
 
 if __name__ == "__main__":

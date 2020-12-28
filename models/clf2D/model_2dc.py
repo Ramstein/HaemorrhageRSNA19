@@ -1,11 +1,10 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-
 import pretrainedmodels
 import pytorchcv.models.airnet
 import pytorchcv.models.airnext
 import pytorchcv.models.sepreresnet
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
 
 
 class ClassificationModelResnetCombineLast(nn.Module):
@@ -26,7 +25,7 @@ class ClassificationModelResnetCombineLast(nn.Module):
         self.l1 = nn.Conv2d(1, base_model_l1_outputs, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(base_model_l1_outputs)
         self.combine_conv = nn.Conv2d(base_model_features * nb_input_slices, 256, kernel_size=1)
-        self.fc = nn.Linear(256*2, nb_features)
+        self.fc = nn.Linear(256 * 2, nb_features)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -43,7 +42,7 @@ class ClassificationModelResnetCombineLast(nn.Module):
         batch_size = inputs.shape[0]
         nb_input_slices = self.nb_input_slices
 
-        x = inputs.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+        x = inputs.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
         x = self.l1(x)
         x = self.bn1(x)
         # TODO: batch norm here may still help when cdf used
@@ -56,7 +55,7 @@ class ClassificationModelResnetCombineLast(nn.Module):
         x = self.base_model.layer4(x)
 
         base_model_features = x.shape[1]
-        x = x.view(batch_size, base_model_features*nb_input_slices, x.shape[2], x.shape[3])
+        x = x.view(batch_size, base_model_features * nb_input_slices, x.shape[2], x.shape[3])
         x = self.combine_conv(x)
 
         # TODO: seems to work worse with relu here, need more testing
@@ -110,10 +109,10 @@ class ClassificationModelResnetCombineLastVariable(nn.Module):
         nn.init.zeros_(self.combine_conv.bias.data)
         with torch.no_grad():
             self.combine_conv.weight.data[:, :, :center_slice, :, :] = 0
-            self.combine_conv.weight.data[:, :, center_slice+1:, :, :] = 0
+            self.combine_conv.weight.data[:, :, center_slice + 1:, :, :] = 0
 
         print(self.combine_conv.weight.data.shape, self.combine_conv.bias.data.shape)
-        self.fc = nn.Linear(combine_conv_features*2, nb_features)
+        self.fc = nn.Linear(combine_conv_features * 2, nb_features)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -133,12 +132,14 @@ class ClassificationModelResnetCombineLastVariable(nn.Module):
                 # print('eval', m)
                 m.eval()
                 m.requires_grad = False
+
         self.apply(set_bn_eval)
 
     def unfreeze_bn(self):
         def set_bn_train(m):
             if 'BatchNorm' in m.__class__.__name__:
                 m.requires_grad = True
+
         self.apply(set_bn_train)
 
     def unfreeze_encoder(self):
@@ -157,7 +158,7 @@ class ClassificationModelResnetCombineLastVariable(nn.Module):
         x = inputs
 
         if not train_last_layers_only:
-            x = x.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+            x = x.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
             x = self.l1(x)
             x = self.bn1(x)
             # TODO: batch norm here may still help when cdf used
@@ -179,7 +180,7 @@ class ClassificationModelResnetCombineLastVariable(nn.Module):
         # x = self.combine_conv(x)  # BxCx1xHxW
         slice_offset = (self.nb_input_slices - nb_input_slices) // 2
         x = F.conv3d(x,
-                     self.combine_conv.weight[:, :, slice_offset:slice_offset+nb_input_slices, :, :],
+                     self.combine_conv.weight[:, :, slice_offset:slice_offset + nb_input_slices, :, :],
                      self.combine_conv.bias)
 
         x = x.view(batch_size, self.combine_conv_features, x.shape[3], x.shape[4])
@@ -204,7 +205,6 @@ class ClassificationModelResnetCombineLastVariable(nn.Module):
             return out
 
 
-
 class ClassificationModelDPNCombineLastVariable(nn.Module):
     def __init__(self,
                  base_model,
@@ -222,7 +222,8 @@ class ClassificationModelDPNCombineLastVariable(nn.Module):
         self.base_model_features = base_model_features
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
-        self.base_model.features[0].conv = nn.Conv2d(1, base_model_l1_outputs, kernel_size=3, stride=2, padding=1, bias=False)
+        self.base_model.features[0].conv = nn.Conv2d(1, base_model_l1_outputs, kernel_size=3, stride=2, padding=1,
+                                                     bias=False)
         self.combine_conv = nn.Conv2d(base_model_features * nb_input_slices, 256, kernel_size=1)
 
         self.combine_conv_features = combine_conv_features
@@ -232,10 +233,10 @@ class ClassificationModelDPNCombineLastVariable(nn.Module):
         nn.init.zeros_(self.combine_conv.bias.data)
         with torch.no_grad():
             self.combine_conv.weight.data[:, :, :center_slice, :, :] = 0
-            self.combine_conv.weight.data[:, :, center_slice+1:, :, :] = 0
+            self.combine_conv.weight.data[:, :, center_slice + 1:, :, :] = 0
 
         print(self.combine_conv.weight.data.shape, self.combine_conv.bias.data.shape)
-        self.fc = nn.Linear(combine_conv_features*2, nb_features)
+        self.fc = nn.Linear(combine_conv_features * 2, nb_features)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -260,7 +261,7 @@ class ClassificationModelDPNCombineLastVariable(nn.Module):
         x = inputs
 
         if not train_last_layers_only:
-            x = x.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+            x = x.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
             x = self.base_model.features(x)
             base_model_features = x.shape[1]
             x = x.view(batch_size, nb_input_slices, base_model_features, x.shape[2], x.shape[3])  # BxSxCxHxW
@@ -272,7 +273,7 @@ class ClassificationModelDPNCombineLastVariable(nn.Module):
         # x = self.combine_conv(x)  # BxCx1xHxW
         slice_offset = (self.nb_input_slices - nb_input_slices) // 2
         x = F.conv3d(x,
-                     self.combine_conv.weight[:, :, slice_offset:slice_offset+nb_input_slices, :, :],
+                     self.combine_conv.weight[:, :, slice_offset:slice_offset + nb_input_slices, :, :],
                      self.combine_conv.bias)
 
         x = x.view(batch_size, self.combine_conv_features, x.shape[3], x.shape[4])
@@ -297,7 +298,6 @@ class ClassificationModelDPNCombineLastVariable(nn.Module):
             return out
 
 
-
 class ClassificationModelResnetCombineFirst(nn.Module):
     def __init__(self,
                  base_model,
@@ -315,7 +315,7 @@ class ClassificationModelResnetCombineFirst(nn.Module):
 
         self.l1 = nn.Conv2d(nb_input_slices, base_model_l1_outputs, kernel_size=7, stride=2, padding=3, bias=True)
         self.bn1 = nn.BatchNorm2d(base_model_l1_outputs)
-        self.fc = nn.Linear(base_model_features*2, nb_features)
+        self.fc = nn.Linear(base_model_features * 2, nb_features)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -383,10 +383,10 @@ class BaseClassificationModel(nn.Module):
         nn.init.zeros_(self.combine_conv.bias.data)
         with torch.no_grad():
             self.combine_conv.weight.data[:, :, :center_slice, :, :] = 0
-            self.combine_conv.weight.data[:, :, center_slice+1:, :, :] = 0
+            self.combine_conv.weight.data[:, :, center_slice + 1:, :, :] = 0
 
         print(self.combine_conv.weight.data.shape, self.combine_conv.bias.data.shape)
-        self.fc = nn.Linear(combine_conv_features*2, nb_features)
+        self.fc = nn.Linear(combine_conv_features * 2, nb_features)
 
     def freeze_encoder(self):
         self.base_model.freeze_encoder()
@@ -412,7 +412,7 @@ class BaseClassificationModel(nn.Module):
         else:
             slice_offset = (self.nb_input_slices - nb_input_slices) // 2
             x = F.conv3d(x,
-                         self.combine_conv.weight[:, :, slice_offset:slice_offset+nb_input_slices, :, :],
+                         self.combine_conv.weight[:, :, slice_offset:slice_offset + nb_input_slices, :, :],
                          self.combine_conv.bias)
 
         x = x.view(batch_size, self.combine_conv_features, x.shape[3], x.shape[4])
@@ -467,8 +467,8 @@ class NasNetMobileModel(nn.Module):
         self.pad = torch.nn.ConstantPad2d(24, -1)
         self.base_model = pretrainedmodels.nasnetamobile(num_classes=1000)
         self.base_model.conv0[0] = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, padding=0,
-                                                  stride=2,
-                                                  bias=False)
+                                             stride=2,
+                                             bias=False)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -539,8 +539,6 @@ class InceptionResnetV2(nn.Module):
     def forward(self, inputs):
         x = self.pad(inputs)
         return self.base_model.features(x)
-
-
 
 
 class AirNet(nn.Module):
@@ -643,7 +641,6 @@ class ResNext50(nn.Module):
 
     def forward(self, inputs):
         return self.base_model.features(inputs)
-
 
 
 def classification_model_resnet34_combine_last(**kwargs):

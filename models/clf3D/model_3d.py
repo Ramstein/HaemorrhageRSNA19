@@ -1,12 +1,11 @@
 import math
+from collections import OrderedDict
 
+import efficientnet_pytorch
+import pretrainedmodels
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from collections import OrderedDict
-
-import pretrainedmodels
-import efficientnet_pytorch
 
 
 class CombineLast3DWrapper(nn.Module):
@@ -24,7 +23,7 @@ class CombineLast3DWrapper(nn.Module):
         self.combine_conv_features = combine_conv_features
         self.combine_conv = nn.Conv3d(base_model_features, self.combine_conv_features,
                                       kernel_size=(combine_slices, 1, 1),
-                                      padding=((combine_slices-1)//2, 0, 0))
+                                      padding=((combine_slices - 1) // 2, 0, 0))
         # self.combine_conv.weight.data.fill_(0.1)
         self.combine_conv.bias.data.fill_(0.0)
 
@@ -39,7 +38,7 @@ class CombineLast3DWrapper(nn.Module):
         assert batch_size == 1
         nb_input_slices = inputs.shape[1]
 
-        x = inputs.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+        x = inputs.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
 
         x = self.base_model(x)
         base_model_features = x.shape[1]
@@ -54,8 +53,8 @@ class CombineLast3DWrapper(nn.Module):
             res.append(F.conv3d(torch.cat([x, x], dim=1), self.fc.weight[:, :, None, None], self.fc.bias))
 
         # x: BxCxSxHxW
-        avg_pool = F.avg_pool3d(x, (1,)+x.shape[3:])
-        max_pool = F.max_pool3d(x, (1,)+x.shape[3:])
+        avg_pool = F.avg_pool3d(x, (1,) + x.shape[3:])
+        max_pool = F.max_pool3d(x, (1,) + x.shape[3:])
         avg_max_pool = torch.cat((avg_pool, max_pool), 1)
         # x: Bx2CxSx1x1
         out = avg_max_pool[:, :, :, 0, 0]
@@ -82,10 +81,10 @@ def test_combine_last_3d_wrapper():
         x[:, i, :, :] += i
 
     for i in range(h):
-        x[:, :, i, :] += i*0.1
+        x[:, :, i, :] += i * 0.1
 
     for i in range(w):
-        x[:, :, :, i] += i*0.01
+        x[:, :, :, i] += i * 0.01
 
     pred = m(x)
     print(pred)
@@ -117,7 +116,7 @@ class ClassificationModelResnetCombineLast(nn.Module):
                                       kernel_size=(combine_slices, 1, 1),
                                       # padding=((combine_slices-1)//2, 0, 0)
                                       )
-        self.fc = nn.Conv1d(self.combine_conv_features*2, nb_features, kernel_size=1)
+        self.fc = nn.Conv1d(self.combine_conv_features * 2, nb_features, kernel_size=1)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -139,7 +138,7 @@ class ClassificationModelResnetCombineLast(nn.Module):
         batch_size = inputs.shape[0]
         nb_input_slices = inputs.shape[1]
 
-        x = inputs.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+        x = inputs.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
         x = self.l1(x)
         x = self.bn1(x)
         x = torch.relu(x)
@@ -159,8 +158,8 @@ class ClassificationModelResnetCombineLast(nn.Module):
             res.append(F.conv3d(torch.cat([x, x], dim=1), self.fc.weight[:, :, None, None], self.fc.bias))
 
         # x: BxCxSxHxW
-        avg_pool = F.avg_pool3d(x, (1,)+x.shape[3:])
-        max_pool = F.max_pool3d(x, (1,)+x.shape[3:])
+        avg_pool = F.avg_pool3d(x, (1,) + x.shape[3:])
+        max_pool = F.max_pool3d(x, (1,) + x.shape[3:])
         avg_max_pool = torch.cat((avg_pool, max_pool), 1)
         # x: Bx2CxSx1x1
         x = avg_max_pool[:, :, :, 0, 0]
@@ -203,7 +202,7 @@ class ClassificationModelENetCombineLast(nn.Module):
                                       kernel_size=(combine_slices, 1, 1),
                                       # padding=((combine_slices-1)//2, 0, 0)
                                       )
-        self.fc = nn.Conv1d(self.combine_conv_features*2, nb_features, kernel_size=1)
+        self.fc = nn.Conv1d(self.combine_conv_features * 2, nb_features, kernel_size=1)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -229,7 +228,7 @@ class ClassificationModelENetCombineLast(nn.Module):
         batch_size = inputs.shape[0]
         nb_input_slices = inputs.shape[1]
 
-        x = inputs.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+        x = inputs.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
         x = self.base_model.extract_features(x)  # BSxCxHxW
 
         base_model_features = x.shape[1]
@@ -241,8 +240,8 @@ class ClassificationModelENetCombineLast(nn.Module):
             res.append(F.conv3d(torch.cat([x, x], dim=1), self.fc.weight[:, :, None, None], self.fc.bias))
 
         # x: BxCxSxHxW
-        avg_pool = F.avg_pool3d(x, (1,)+x.shape[3:])
-        max_pool = F.max_pool3d(x, (1,)+x.shape[3:])
+        avg_pool = F.avg_pool3d(x, (1,) + x.shape[3:])
+        max_pool = F.max_pool3d(x, (1,) + x.shape[3:])
         avg_max_pool = torch.cat((avg_pool, max_pool), 1)
         # x: Bx2CxSx1x1
         x = avg_max_pool[:, :, :, 0, 0]
@@ -295,7 +294,7 @@ class ClassificationModelResnetCombineL3(nn.Module):
                                       kernel_size=(combine_slices, 1, 1),
                                       # padding=((combine_slices-1)//2, 0, 0)
                                       )
-        self.fc = nn.Conv1d(base_model_features*2, nb_features, kernel_size=1)
+        self.fc = nn.Conv1d(base_model_features * 2, nb_features, kernel_size=1)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -323,7 +322,7 @@ class ClassificationModelResnetCombineL3(nn.Module):
         batch_size = inputs.shape[0]
         nb_input_slices = inputs.shape[1]
 
-        x = inputs.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+        x = inputs.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
         if self.use_wso:
             x = self.wso(x)
         x = self.l1(x)
@@ -341,7 +340,7 @@ class ClassificationModelResnetCombineL3(nn.Module):
         x = self.combine_conv(x)
         x = x.permute((0, 2, 1, 3, 4))  # BxSxCxHxW
         nb_output_slices = x.shape[1]
-        x = x.reshape((batch_size*nb_output_slices, x.shape[2], x.shape[3], x.shape[4]))  # BSxCxHxW
+        x = x.reshape((batch_size * nb_output_slices, x.shape[2], x.shape[3], x.shape[4]))  # BSxCxHxW
         x = self.base_model.layer4(x)
         x = x.reshape((batch_size, nb_output_slices, x.shape[1], x.shape[2], x.shape[3]))  # BxSxCxHxW
         x = x.permute((0, 2, 1, 3, 4))  # BxCxSxHxW
@@ -350,8 +349,8 @@ class ClassificationModelResnetCombineL3(nn.Module):
         #     res.append(F.conv3d(torch.cat([x, x], dim=1), self.fc.weight[:, :, None, None], self.fc.bias))
 
         # x: BxCxSxHxW
-        avg_pool = F.avg_pool3d(x, (1,)+x.shape[3:])
-        max_pool = F.max_pool3d(x, (1,)+x.shape[3:])
+        avg_pool = F.avg_pool3d(x, (1,) + x.shape[3:])
+        max_pool = F.max_pool3d(x, (1,) + x.shape[3:])
         avg_max_pool = torch.cat((avg_pool, max_pool), 1)
         # x: Bx2CxSx1x1
         x = avg_max_pool[:, :, :, 0, 0]
@@ -369,7 +368,6 @@ class ClassificationModelResnetCombineL3(nn.Module):
         #     return res
         # else:
         return out
-
 
 
 class ClassificationModelDPN(nn.Module):
@@ -401,7 +399,7 @@ class ClassificationModelDPN(nn.Module):
                                       kernel_size=(combine_slices, 1, 1),
                                       # padding=((combine_slices-1)//2, 0, 0)
                                       )
-        self.fc = nn.Conv1d(self.combine_conv_features*2, nb_features, kernel_size=1)
+        self.fc = nn.Conv1d(self.combine_conv_features * 2, nb_features, kernel_size=1)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -426,7 +424,7 @@ class ClassificationModelDPN(nn.Module):
         batch_size = inputs.shape[0]
         nb_input_slices = inputs.shape[1]
 
-        x = inputs.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+        x = inputs.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
         x = self.base_model.features(x)
         base_model_features = x.shape[1]
         x = x.view(batch_size, nb_input_slices, base_model_features, x.shape[2], x.shape[3])  # BxSxCxHxW
@@ -437,8 +435,8 @@ class ClassificationModelDPN(nn.Module):
             res.append(F.conv3d(torch.cat([x, x], dim=1), self.fc.weight[:, :, None, None], self.fc.bias))
 
         # x: BxCxSxHxW
-        avg_pool = F.avg_pool3d(x, (1,)+x.shape[3:])
-        max_pool = F.max_pool3d(x, (1,)+x.shape[3:])
+        avg_pool = F.avg_pool3d(x, (1,) + x.shape[3:])
+        max_pool = F.max_pool3d(x, (1,) + x.shape[3:])
         avg_max_pool = torch.cat((avg_pool, max_pool), 1)
         # x: Bx2CxSx1x1
         x = avg_max_pool[:, :, :, 0, 0]
@@ -456,6 +454,7 @@ class ClassificationModelDPN(nn.Module):
             return res
         else:
             return out
+
 
 import pytorchcv.models.airnet
 import pytorchcv.models.sepreresnet
@@ -483,7 +482,7 @@ class ClassificationModelAirnet(nn.Module):
                                       kernel_size=(combine_slices, 1, 1),
                                       # padding=((combine_slices-1)//2, 0, 0)
                                       )
-        self.fc = nn.Conv1d(self.combine_conv_features*2, nb_features, kernel_size=1)
+        self.fc = nn.Conv1d(self.combine_conv_features * 2, nb_features, kernel_size=1)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -509,7 +508,7 @@ class ClassificationModelAirnet(nn.Module):
         batch_size = inputs.shape[0]
         nb_input_slices = inputs.shape[1]
 
-        x = inputs.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+        x = inputs.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
         x = self.base_model.features(x)
         base_model_features = x.shape[1]
         x = x.view(batch_size, nb_input_slices, base_model_features, x.shape[2], x.shape[3])  # BxSxCxHxW
@@ -520,8 +519,8 @@ class ClassificationModelAirnet(nn.Module):
             res.append(F.conv3d(torch.cat([x, x], dim=1), self.fc.weight[:, :, None, None], self.fc.bias))
 
         # x: BxCxSxHxW
-        avg_pool = F.avg_pool3d(x, (1,)+x.shape[3:])
-        max_pool = F.max_pool3d(x, (1,)+x.shape[3:])
+        avg_pool = F.avg_pool3d(x, (1,) + x.shape[3:])
+        max_pool = F.max_pool3d(x, (1,) + x.shape[3:])
         avg_max_pool = torch.cat((avg_pool, max_pool), 1)
         # x: Bx2CxSx1x1
         x = avg_max_pool[:, :, :, 0, 0]
@@ -541,9 +540,8 @@ class ClassificationModelAirnet(nn.Module):
             return out
 
 
-
 class WSO(nn.Module):
-    def __init__(self,  windows=None, U=255., eps=8.):
+    def __init__(self, windows=None, U=255., eps=8.):
         super(WSO, self).__init__()
 
         if windows is None:
@@ -617,10 +615,9 @@ def check_wso():
         for batch in range(batch_size):
             for j in range(4):
                 # for k in range(4):
-                    ax[j].imshow(windowed_img[batch, j], cmap='gray')
+                ax[j].imshow(windowed_img[batch, j], cmap='gray')
 
         plt.show()
-
 
 
 def classification_model_resnet34_combine_last(**kwargs):
@@ -685,15 +682,14 @@ def classification_model_dpn68_combine_last(**kwargs):
                                   base_model_l1_outputs=10,
                                   **kwargs)
 
+
 def classification_model_airnet50(**kwargs):
     return ClassificationModelAirnet(base_model_features=2048,
-                                  nb_features=6,
-                                  base_model_l1_outputs=10,
-                                  **kwargs)
+                                     nb_features=6,
+                                     base_model_l1_outputs=10,
+                                     **kwargs)
 
 
 if __name__ == '__main__':
     # test_combine_last_3d_wrapper()
     check_wso()
-
-

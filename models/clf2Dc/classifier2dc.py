@@ -1,5 +1,6 @@
 import itertools
 
+import numpy as np
 import pytorch_lightning as pl
 import torch
 import torch.nn as nn
@@ -7,15 +8,14 @@ from sklearn.metrics import log_loss
 from torch.nn import functional as F
 from torch.optim.lr_scheduler import CosineAnnealingLR, LambdaLR
 from torch.utils.data import DataLoader
-import numpy as np
 
+import models.commons.metrics as metrics
 from data.dataset_2dc import IntracranialDataset
 from models.commons.attention import ContextualAttention, SpatialAttention
 from models.commons.balancing_sampler import BalancedBatchSampler
-import models.commons.metrics as metrics
-from models.commons.radam import RAdam
 from models.commons.concat_pool import concat_pool
 from models.commons.get_base_model import get_base_model
+from models.commons.radam import RAdam
 
 
 class Classifier2DC(pl.LightningModule):

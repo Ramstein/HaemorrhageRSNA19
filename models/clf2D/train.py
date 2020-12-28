@@ -1,29 +1,25 @@
 import argparse
-import collections
 import os
 
-import numpy as np
-import torch
-import torch.optim as optim
-from torch.optim import lr_scheduler
-from torch.utils.data import DataLoader
-from torchvision import datasets, models, transforms
-from tqdm import tqdm
-from data import dataset
 import albumentations
 import albumentations.pytorch
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
 import sklearn.metrics
-from apex import amp
-
-import torch.nn as nn
+import torch
 import torch.nn.functional as F
-from configs.base_config import BaseConfig
-from models.commons import radam
-from models.commons import metrics
-from models.clf2D.experiments import MODELS
+import torch.optim as optim
+from apex import amp
+from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
+from tqdm import tqdm
+
+from configs.base_config import BaseConfig
+from data import dataset
+from models.clf2D.experiments import MODELS
+from models.commons import metrics
+from models.commons import radam
 
 
 def build_model_str(model_name, fold, run):
@@ -116,19 +112,19 @@ def train(model_name, fold, run=None, resume_epoch=-1, use_apex=False):
                             num_workers=8,
                             shuffle=True,
                             batch_size=model_info.batch_size),
-        'val':   DataLoader(dataset_valid,
-                            shuffle=False,
-                            num_workers=8,
-                            batch_size=model_info.batch_size)
+        'val': DataLoader(dataset_valid,
+                          shuffle=False,
+                          num_workers=8,
+                          batch_size=model_info.batch_size)
     }
 
     if model_info.single_slice_steps > 0:
         augmentations = [
-                albumentations.ShiftScaleRotate(shift_limit=16. / 256, scale_limit=0.05, rotate_limit=30,
-                                                interpolation=cv2.INTER_LINEAR,
-                                                border_mode=cv2.BORDER_REPLICATE,
-                                                p=0.80),
-            ]
+            albumentations.ShiftScaleRotate(shift_limit=16. / 256, scale_limit=0.05, rotate_limit=30,
+                                            interpolation=cv2.INTER_LINEAR,
+                                            border_mode=cv2.BORDER_REPLICATE,
+                                            p=0.80),
+        ]
         if model_info.use_vflip:
             augmentations += [
                 albumentations.Flip(),
@@ -157,18 +153,18 @@ def train(model_name, fold, run=None, resume_epoch=-1, use_apex=False):
             dataset_train_1_slice,
             num_workers=8,
             shuffle=True,
-            batch_size=model_info.batch_size*2)
+            batch_size=model_info.batch_size * 2)
         data_loaders['val_1_slice'] = DataLoader(
             dataset_valid_1_slice,
             shuffle=False,
             num_workers=8,
-            batch_size=model_info.batch_size*2)
+            batch_size=model_info.batch_size * 2)
 
     model.train()
 
     class_weights = torch.tensor([1.0, 1.0, 1.0, 1.0, 1.0, 2.0]).cuda()
 
-    def criterium(y_pred,y_true):
+    def criterium(y_pred, y_true):
         return F.binary_cross_entropy_with_logits(y_pred, y_true, class_weights.repeat(y_pred.shape[0], 1))
 
     # fit the new layers first:
@@ -195,7 +191,8 @@ def train(model_name, fold, run=None, resume_epoch=-1, use_apex=False):
                 initial_optimizer.zero_grad()
                 epoch_loss.append(float(loss))
 
-                data_iter.set_description(f'Loss: Running {np.mean(epoch_loss[-500:]):1.4f} Avg {np.mean(epoch_loss):1.4f}')
+                data_iter.set_description(
+                    f'Loss: Running {np.mean(epoch_loss[-500:]):1.4f} Avg {np.mean(epoch_loss):1.4f}')
         model.unfreeze_encoder()
 
     optimizer = radam.RAdam(model.parameters(), lr=model_info.initial_lr)
@@ -217,7 +214,7 @@ def train(model_name, fold, run=None, resume_epoch=-1, use_apex=False):
         if 'amp' in checkpoint:
             amp.load_state_dict(checkpoint['amp'])
 
-    for epoch_num in range(resume_epoch+1, 7):
+    for epoch_num in range(resume_epoch + 1, 7):
         for phase in ['train', 'val']:
             model.train(phase == 'train')
             epoch_loss = []
@@ -229,7 +226,7 @@ def train(model_name, fold, run=None, resume_epoch=-1, use_apex=False):
                 model.on_epoch(epoch_num)
 
             if epoch_num < model_info.single_slice_steps:
-                data_loader = data_loaders[phase+'_1_slice']
+                data_loader = data_loaders[phase + '_1_slice']
                 print("use 1 slice input")
             else:
                 data_loader = data_loaders[phase]
@@ -344,9 +341,9 @@ def check_heatmap(model_name, fold, epoch, run=None):
     batch_size = 1
 
     data_loader = DataLoader(dataset_valid,
-                          shuffle=False,
-                          num_workers=16,
-                          batch_size=batch_size)
+                             shuffle=False,
+                             num_workers=16,
+                             batch_size=batch_size)
 
     data_iter = tqdm(enumerate(data_loader), total=len(data_loader))
     for iter_num, data in data_iter:
@@ -401,14 +398,14 @@ def check_windows(model_name, fold, epoch, run=None):
     b = model.windows_conv.bias.detach().cpu().numpy()
     print(w, b)
     for wi, bi in zip(w, b):
-        print(f'{-int(bi/wi*1000)} +- {int(abs(1000/wi))}')
+        print(f'{-int(bi / wi * 1000)} +- {int(abs(1000 / wi))}')
 
     batch_size = 1
 
     data_loader = DataLoader(dataset_valid,
-                          shuffle=False,
-                          num_workers=16,
-                          batch_size=batch_size)
+                             shuffle=False,
+                             num_workers=16,
+                             batch_size=batch_size)
 
     data_iter = tqdm(enumerate(data_loader), total=len(data_loader))
     for iter_num, data in data_iter:
@@ -425,7 +422,7 @@ def check_windows(model_name, fold, epoch, run=None):
                 print(labels[batch], data['path'][batch])
                 for j in range(4):
                     for k in range(4):
-                        ax[j, k].imshow(windowed_img[batch, j*4+k], cmap='gray')
+                        ax[j, k].imshow(windowed_img[batch, j * 4 + k], cmap='gray')
 
             plt.show()
 
@@ -474,7 +471,7 @@ def check_score(model_name, fold, epoch, run=None):
     loss = np.mean(loss, axis=1)
 
     # plt.hist(loss, bins=1024)
-    plt.plot(np.sort(-1*loss)*-1)
+    plt.plot(np.sort(-1 * loss) * -1)
     plt.axvline()
     plt.axhline()
     plt.show()
@@ -504,7 +501,8 @@ if __name__ == '__main__':
 
     if action == 'train':
         try:
-            train(model_name=args.model, run=args.run, fold=args.fold, resume_epoch=args.resume_epoch, use_apex=args.apex)
+            train(model_name=args.model, run=args.run, fold=args.fold, resume_epoch=args.resume_epoch,
+                  use_apex=args.apex)
         except KeyboardInterrupt:
             pass
 

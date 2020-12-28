@@ -1,7 +1,7 @@
-from data.dataset_2dc import IntracranialDataset
-
-import numpy as np
 import cv2
+import numpy as np
+
+from data.dataset_2dc import IntracranialDataset
 
 
 class IntracranialDataset3D(IntracranialDataset):
@@ -26,11 +26,10 @@ def main():
     for x in IntracranialDataset3D(Config(), folds=[0, 1, 2, 3], augment=True):
         print(x['image'].shape)
         for img_slice in list(x['image'][0]):
-            img_slice = np.clip(((np.array(img_slice) + 1)*255), 0, 255).astype(np.uint8)
+            img_slice = np.clip(((np.array(img_slice) + 1) * 255), 0, 255).astype(np.uint8)
             cv2.imshow('slice', img_slice)
             cv2.waitKey()
 
 
 if __name__ == "__main__":
     main()
-

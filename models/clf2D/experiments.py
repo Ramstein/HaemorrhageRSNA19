@@ -42,7 +42,7 @@ class ModelInfo:
 
 
 def _w(w, l):
-    return l-w/2, l+w/2
+    return l - w / 2, l + w / 2
 
 
 MODELS = {
@@ -682,7 +682,6 @@ MODELS = {
         single_slice_steps=6
     ),
 
-
     'xception_400': ModelInfo(
         factory=model_2dc.classification_model_xception,
         args=dict(nb_input_slices=5, dropout=0),
@@ -850,7 +849,6 @@ MODELS = {
         single_slice_steps=5,
         use_vflip=True
     ),
-
 
     'se_preresnext26b_400': ModelInfo(
         factory=model_2dc.classification_model_se_preresnext26b,

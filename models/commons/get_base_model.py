@@ -1,8 +1,8 @@
-import torch
 from copy import deepcopy
 
-import torch.nn as nn
 import pretrainedmodels
+import torch
+import torch.nn as nn
 
 
 def get_base_model(config):

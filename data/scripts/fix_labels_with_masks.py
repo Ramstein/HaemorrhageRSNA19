@@ -1,21 +1,19 @@
-import os
 import glob
+import os
 import re
 from collections import UserDict
 
-import numpy as np
 import nibabel
+import numpy as np
 import pandas as pd
 
 from configs.base_config import BaseConfig
-
 
 MASKS_QUERY = BaseConfig.data_root + "/train/*/Untitled.nii.gz"
 SEG_LABEL_MULT = 1
 
 
 def main():
-
     labels = ['any', 'epidural', 'intraparenchymal', 'intraventricular', 'subarachnoid', 'subdural']
     new_labels_dict = LabelsFromSegs(MASKS_QUERY)
 
@@ -61,7 +59,6 @@ def main():
 
 
 class LabelsFromSegs(UserDict):
-
     CLASSES = [1, 2, 3, 4, 5, 6]
     MASK_SIZE_THRESHOLD = 3
 

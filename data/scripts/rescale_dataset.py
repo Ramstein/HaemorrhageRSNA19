@@ -1,10 +1,10 @@
 import glob
+import os
 import traceback
 from multiprocessing.pool import Pool
 
 import cv2 as cv
 import numpy as np
-import os
 import tqdm
 
 from configs.base_config import BaseConfig as config

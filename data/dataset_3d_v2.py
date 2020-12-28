@@ -1,19 +1,15 @@
-import math
+import collections
 import os
-import pickle
 import random
 
 import numpy as np
 import pandas as pd
-from pathlib import Path
-import collections
-import cv2
 import torch
 from torch.utils.data import Dataset
 from tqdm import tqdm
 
-from preprocessing import hu_converter
 from configs.base_config import BaseConfig
+from preprocessing import hu_converter
 
 SliceInfo = collections.namedtuple('SliceInfo', 'study_id slice_num path labels')
 
@@ -111,13 +107,13 @@ class IntracranialDataset(Dataset):
             first_slice = -self.combine_slices_padding
             last_slice = slices_in_study + self.combine_slices_padding
         else:
-            if self.random_slice and slices_in_study + 2*self.combine_slices_padding > self.num_slices:
+            if self.random_slice and slices_in_study + 2 * self.combine_slices_padding > self.num_slices:
                 first_slice = random.randrange(-self.combine_slices_padding,
-                                               slices_in_study-self.num_slices+self.combine_slices_padding)
-                last_slice = first_slice+self.num_slices
+                                               slices_in_study - self.num_slices + self.combine_slices_padding)
+                last_slice = first_slice + self.num_slices
             else:
                 first_slice = (slices_in_study - self.num_slices) * 2 // 3
-                last_slice = first_slice+self.num_slices  # slices_in_study
+                last_slice = first_slice + self.num_slices  # slices_in_study
 
         all_images = []
         all_labels = []
@@ -180,7 +176,7 @@ class IntracranialDataset(Dataset):
             'image': all_images,
             'study_id': study_id,
             'first_slice': first_slice,
-            'slice_num': np.arange(first_slice+self.combine_slices_padding, last_slice-self.combine_slices_padding),
+            'slice_num': np.arange(first_slice + self.combine_slices_padding, last_slice - self.combine_slices_padding),
             'labels': all_labels,
             'path': all_paths
         }
@@ -189,8 +185,6 @@ class IntracranialDataset(Dataset):
 
 
 def check_performance():
-    import matplotlib.pyplot as plt
-    import albumentations
     import albumentations.pytorch
     import cv2
 
@@ -213,14 +207,14 @@ def check_performance():
                              )
 
     dl = torch.utils.data.DataLoader(ds,
-               num_workers=0,
-               shuffle=True,
-               batch_size=1)
+                                     num_workers=0,
+                                     shuffle=True,
+                                     batch_size=1)
 
     for data in tqdm(dl):
         pass
         img = data['image'].float().cuda()
-        labels = data['labels'] # .float().cuda()
+        labels = data['labels']  # .float().cuda()
         # print(img.shape)
         img = img[0, :, None, :, :]
         # print(img.shape)
@@ -228,7 +222,6 @@ def check_performance():
 
 def check_dataset():
     import matplotlib.pyplot as plt
-    import albumentations
     import albumentations.pytorch
     import cv2
 
@@ -271,6 +264,7 @@ def check_dataset():
             plt.imshow(img[0, i], cmap='gray')
             plt.show()
         break
+
 
 if __name__ == '__main__':
     # check_performance()

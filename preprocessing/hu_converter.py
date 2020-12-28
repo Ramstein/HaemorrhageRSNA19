@@ -1,4 +1,5 @@
 import os
+
 import numpy as np
 from scipy.interpolate import interp1d
 
@@ -52,4 +53,3 @@ class HuConverter:
         slice_pixels_copy[slice_pixels_copy > max_hu_value] = max_hu_value
         converter = interp1d([min_hu_value, max_hu_value], [0, 255])
         return np.uint8(converter(slice_pixels_copy))
-

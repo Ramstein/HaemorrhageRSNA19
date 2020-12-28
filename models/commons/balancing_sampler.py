@@ -1,8 +1,8 @@
-from copy import deepcopy
 import os
+from copy import deepcopy
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from torch.utils.data.sampler import Sampler
 
 
@@ -30,7 +30,8 @@ class BalancedBatchSampler(Sampler):
 
     def __iter__(self):
         for _ in range(len(self)):
-            out = np.random.choice(self.config.n_classes, int(self.config.batch_size/len(self.config.gpus)), p=self.config.probas)
+            out = np.random.choice(self.config.n_classes, int(self.config.batch_size / len(self.config.gpus)),
+                                   p=self.config.probas)
             num_examples = np.zeros(self.config.n_classes, dtype=np.int32)
             for i in out:
                 num_examples[i] += 1
@@ -50,4 +51,4 @@ class BalancedBatchSampler(Sampler):
         return sampled_df.index
 
     def __len__(self):
-        return int(len(self.data)/int(self.config.batch_size/len(self.config.gpus)))
+        return int(len(self.data) / int(self.config.batch_size / len(self.config.gpus)))

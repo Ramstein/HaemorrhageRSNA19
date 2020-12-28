@@ -1,20 +1,18 @@
 import math
 import os
 from glob import glob
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from pathlib import Path
-import cv2
-import torch
 import skimage
+import torch
 from torch.utils.data import Dataset
 from tqdm import tqdm
 
-from preprocessing import hu_converter
 from configs.base_config import BaseConfig
-
-from data.utils import load_seg_slice, timeit_context, load_seg_3d
+from data.utils import load_seg_3d
+from preprocessing import hu_converter
 
 
 class IntracranialDataset(Dataset):
@@ -68,7 +66,8 @@ class IntracranialDataset(Dataset):
             data = data[data.fold.isin(folds)]
 
         if add_segmentation_masks:
-            seg_ids = {path.split('/')[-2] for path in glob(f'{BaseConfig.data_root}/segmentation_masks/*/Untitled.nii.gz')}
+            seg_ids = {path.split('/')[-2] for path in
+                       glob(f'{BaseConfig.data_root}/segmentation_masks/*/Untitled.nii.gz')}
         else:
             seg_ids = set()
 
@@ -150,7 +149,7 @@ class IntracranialDataset(Dataset):
         if self.num_slices == 1:
             img = load_img(slice_num)
         else:
-            steps = int(math.floor(self.num_slices/2.0))
+            steps = int(math.floor(self.num_slices / 2.0))
             img = np.concatenate(
                 [load_img(slice) for slice in range(slice_num - steps, slice_num + steps + 1)],
                 axis=2
@@ -183,7 +182,7 @@ class IntracranialDataset(Dataset):
                     processed = self.preprocess_func(image=img)
                 img = processed['image']
 
-        out_seg = np.zeros((BaseConfig.n_classes+1, img.shape[0], img.shape[1]), dtype=np.float32)
+        out_seg = np.zeros((BaseConfig.n_classes + 1, img.shape[0], img.shape[1]), dtype=np.float32)
 
         if have_segmentation:
             if self.center_crop > 0:
@@ -191,7 +190,7 @@ class IntracranialDataset(Dataset):
                 from_col = (self.img_size - self.center_crop) // 2
                 seg = seg[from_row:from_row + self.center_crop, from_col:from_col + self.center_crop]
 
-            for class_ in range(1, BaseConfig.n_classes+1):
+            for class_ in range(1, BaseConfig.n_classes + 1):
                 out_seg[class_ - 1] = np.float32(seg == class_)
             # last class is any
             out_seg[-1] = np.float32(np.any(out_seg[:-1], axis=0))
@@ -243,8 +242,6 @@ class IntracranialDataset(Dataset):
         return res
 
 
-
-
 def print_stats(title, array):
     if len(array):
         print('{} shape:{} dtype:{} min:{} max:{} mean:{} median:{}'.format(
@@ -266,8 +263,10 @@ if __name__ == '__main__':
     import albumentations.pytorch
     import cv2
 
+
     def _w(w, l):
         return l - w / 2, l + w / 2
+
 
     ds = IntracranialDataset(csv_file='5fold.csv', folds=[1],
                              img_size=400,
@@ -277,7 +276,7 @@ if __name__ == '__main__':
                              num_slices=5,
                              preprocess_func=albumentations.Compose([
                                  albumentations.ShiftScaleRotate(
-                                     shift_limit=16./256, scale_limit=0.1, rotate_limit=30,
+                                     shift_limit=16. / 256, scale_limit=0.1, rotate_limit=30,
                                      interpolation=cv2.INTER_LINEAR,
                                      border_mode=cv2.BORDER_REPLICATE,
                                      p=0.99)

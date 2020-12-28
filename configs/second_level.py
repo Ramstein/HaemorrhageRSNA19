@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from configs.base_config import BaseConfig
 
 

@@ -1,19 +1,21 @@
 import argparse
 import os
+
+import albumentations
+import albumentations.pytorch
+import numpy as np
+import pandas as pd
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-import numpy as np
-import pandas as pd
 
-from data import dataset_3d_v2
 from configs.base_config import BaseConfig
-from models.clf3D.experiments_3d import MODELS
-from models.clf2D.train import build_model_str
-import albumentations
-import albumentations.pytorch
+from data import dataset_3d_v2
 from models.clf2D.predict import Rotate90
+from models.clf2D.train import build_model_str
+from models.clf3D.experiments_3d import MODELS
+
 
 # import ttach as tta
 
@@ -115,7 +117,8 @@ def predict_test(model_name, fold, epoch, mode='normal', run=None):
     if os.path.exists(df_out_path):
         print('Skip existing', df_out_path)
     else:
-        predict(model_name=model_name, fold=fold, epoch=epoch, is_test=True, df_out_path=df_out_path, mode=mode, run=run)
+        predict(model_name=model_name, fold=fold, epoch=epoch, is_test=True, df_out_path=df_out_path, mode=mode,
+                run=run)
 
 
 def predict_oof(model_name, fold, epoch, mode='normal', run=None):
@@ -127,7 +130,8 @@ def predict_oof(model_name, fold, epoch, mode='normal', run=None):
     if os.path.exists(df_out_path):
         print('Skip existing', df_out_path)
     else:
-        predict(model_name=model_name, fold=fold, epoch=epoch, is_test=False, df_out_path=df_out_path, mode=mode, run=run)
+        predict(model_name=model_name, fold=fold, epoch=epoch, is_test=False, df_out_path=df_out_path, mode=mode,
+                run=run)
 
 
 if __name__ == '__main__':

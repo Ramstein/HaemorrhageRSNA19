@@ -1,23 +1,21 @@
 """ Load dicom files using vtk package """
 import json
 import multiprocessing
-
-import shutil
-
 import os
+import shutil
+import traceback
+from collections import namedtuple
+from concurrent.futures import ProcessPoolExecutor
 from glob import glob
 from math import atan
-from collections import namedtuple
-import traceback
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 from pathlib import Path
 
 import numpy as np
+import tqdm
 import vtk
 from scipy import ndimage
-from vtk import vtkImageCast, vtkImageResample, vtkDICOMImageReader
+from vtk import vtkImageResample, vtkDICOMImageReader
 from vtk.util.numpy_support import vtk_to_numpy
-import tqdm
 
 from configs.base_config import BaseConfig
 from data.utils import crop_scan

@@ -1,18 +1,15 @@
-import pretrainedmodels
+import numpy as np
 import pytorch_lightning as pl
 import torch
-import torch.nn as nn
 from sklearn.metrics import log_loss
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
-import numpy as np
-from copy import deepcopy
 
-from data.dataset_3d import IntracranialDataset3D
-from models.commons.balancing_sampler import BalancedBatchSampler
 import models.commons.metrics as metrics
-from models.commons.radam import RAdam
+from data.dataset_3d import IntracranialDataset3D
 from models.clf3D.utils import generate_model
+from models.commons.balancing_sampler import BalancedBatchSampler
+from models.commons.radam import RAdam
 
 
 class MedicalNetModule(pl.LightningModule):

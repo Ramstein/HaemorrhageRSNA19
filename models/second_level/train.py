@@ -1,9 +1,10 @@
-import torch
-from torch.nn import functional as F
 import numpy as np
-from tqdm import tqdm
-from configs.second_level import Config
+import torch
 from sklearn.metrics import log_loss
+from torch.nn import functional as F
+from tqdm import tqdm
+
+from configs.second_level import Config
 
 
 def main(config):
@@ -16,8 +17,8 @@ def main(config):
     train_pred = train_x[:, :config.predictions_in]
     val_pred = val_x[:, :config.predictions_in]
 
-    train_pred[train_pred > 0] = torch.log(train_pred[train_pred > 0] / (1-train_pred[train_pred > 0]))
-    val_pred[val_pred > 0] = torch.log(val_pred[val_pred > 0] / (1-val_pred[val_pred > 0]))
+    train_pred[train_pred > 0] = torch.log(train_pred[train_pred > 0] / (1 - train_pred[train_pred > 0]))
+    val_pred[val_pred > 0] = torch.log(val_pred[val_pred > 0] / (1 - val_pred[val_pred > 0]))
 
     # model = torch.nn.Linear(train_x.shape[1], features_out)
 
@@ -54,7 +55,7 @@ def main(config):
                 val_y.detach().cpu().numpy().flatten(),
                 torch.sigmoid(val_y_hat).detach().cpu().numpy().flatten(),
                 sample_weight=[1, 1, 1, 1, 1, 2] * val_y.shape[0],
-                eps = 1e-7
+                eps=1e-7
             )
 
         model.train()

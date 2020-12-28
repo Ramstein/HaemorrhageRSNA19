@@ -1,30 +1,25 @@
 import argparse
-import collections
+import math
 import os
 
 import adabound as adabound
-import numpy as np
-import torch
-import torch.optim as optim
-import torchsummary as torchsummary
-from torch.optim import lr_scheduler
-from torch.utils.data import DataLoader
-from torchvision import datasets, models, transforms
-from tqdm import tqdm
-from data import dataset, dataset_3d_v2
 import albumentations
 import albumentations.pytorch
 import cv2
 import matplotlib.pyplot as plt
-import torch.nn as nn
+import numpy as np
+import torch
 import torch.nn.functional as F
-from configs.base_config import BaseConfig
-from models.commons import radam
-from models.clf3D.experiments_3d import MODELS
+import torch.optim as optim
+from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-import math
+from tqdm import tqdm
 
+from configs.base_config import BaseConfig
+from data import dataset_3d_v2
 from models.clf2D.train import build_model_str, log_metrics
+from models.clf3D.experiments_3d import MODELS
+from models.commons import radam
 
 
 class CosineAnnealingLRWithRestarts(torch.optim.lr_scheduler._LRScheduler):
@@ -126,7 +121,7 @@ def train(model_name, fold, run=None, resume_epoch=-1):
         folds=[f for f in range(BaseConfig.nb_folds) if f != fold],
         random_slice=True,
         preprocess_func=albumentations.Compose([
-            albumentations.ShiftScaleRotate(shift_limit=16./256, scale_limit=0.05, rotate_limit=30,
+            albumentations.ShiftScaleRotate(shift_limit=16. / 256, scale_limit=0.05, rotate_limit=30,
                                             interpolation=cv2.INTER_LINEAR,
                                             border_mode=cv2.BORDER_REPLICATE,
                                             p=0.75),
@@ -218,7 +213,8 @@ def train(model_name, fold, run=None, resume_epoch=-1):
                     initial_optimizer.zero_grad()
                 epoch_loss.append(float(loss))
 
-                data_iter.set_description(f'Loss: Running {np.mean(epoch_loss[-100:]):1.4f} Avg {np.mean(epoch_loss):1.4f}')
+                data_iter.set_description(
+                    f'Loss: Running {np.mean(epoch_loss[-100:]):1.4f} Avg {np.mean(epoch_loss):1.4f}')
         del initial_optimizer
     model.module.unfreeze_encoder()
 
@@ -227,7 +223,7 @@ def train(model_name, fold, run=None, resume_epoch=-1):
         'val': 2
     }
 
-    for epoch_num in range(resume_epoch+1, 80):
+    for epoch_num in range(resume_epoch + 1, 80):
         for phase in ['train', 'val']:
             if epoch_num % phase_period[phase] == 0:
                 model.train(phase == 'train')
@@ -282,7 +278,8 @@ def train(model_name, fold, run=None, resume_epoch=-1):
                     logger.add_scalar(f'loss_{phase}', np.mean(epoch_loss), epoch_num)
                 logger.add_scalar('lr', optimizer.param_groups[0]['lr'], epoch_num)  # scheduler.get_lr()[0]
                 try:
-                    log_metrics(logger=logger, phase=phase, epoch_num=epoch_num, y=epoch_labels, y_hat=epoch_predictions)
+                    log_metrics(logger=logger, phase=phase, epoch_num=epoch_num, y=epoch_labels,
+                                y_hat=epoch_predictions)
                 except Exception:
                     pass
 
@@ -357,7 +354,7 @@ def check_score(model_name, fold, epoch, run=None):
     loss = np.mean(loss, axis=1)
 
     # plt.hist(loss, bins=1024)
-    plt.plot(np.sort(-1*loss)*-1)
+    plt.plot(np.sort(-1 * loss) * -1)
     plt.axvline()
     plt.axhline()
     plt.show()

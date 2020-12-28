@@ -1,15 +1,13 @@
 import os
 from pathlib import Path
-import random
-import sys
 
+import albumentations
+import albumentations.pytorch
+import cv2
 import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
-import albumentations
-import albumentations.pytorch
-import cv2
 
 from data.utils import normalize_train, load_scan_2dc, load_seg_masks_2dc
 from preprocessing.hu_converter import HuConverter

@@ -1,5 +1,5 @@
-from models.clf3D import model_3d
 from models.clf2D.experiments import ModelInfo
+from models.clf3D import model_3d
 
 MODELS = {
     'resnet34_400_5_planes_combine_last': ModelInfo(

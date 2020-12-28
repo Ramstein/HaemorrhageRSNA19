@@ -23,11 +23,11 @@ WORKERS = 12
 STEP = 25
 PATH = os.path.join(BaseConfig.data_root, "*/*/dicom/*")
 CLASSES = {
-    "epidural":         (255, 237, 0),
+    "epidural": (255, 237, 0),
     "intraparenchymal": (212, 36, 0),
     "intraventricular": (173, 102, 108),
-    "subarachnoid":     (0, 48, 114),
-    "subdural":         (74, 87, 50)
+    "subarachnoid": (0, 48, 114),
+    "subdural": (74, 87, 50)
 }
 
 loader = PydicomLoader()
@@ -78,7 +78,7 @@ def save_image(path, img, img_orig_hu):
         dst_path = dst_link.replace('m2', 'storage')
         os.makedirs(os.path.dirname(dst_link), exist_ok=True)
 
-    for path in [dst_path,  dst_path_orig_hu]:
+    for path in [dst_path, dst_path_orig_hu]:
         os.makedirs(os.path.dirname(path), exist_ok=True)
 
     cv2.imwrite(dst_path, img)
@@ -100,7 +100,6 @@ def main():
 
     # one broken sample, copied train/ID_9180c688de/npy/036.npy to 037.npy
     # convert_sample('/mnt/data_fast/rsna/train/ID_9180c688de/dicom/037.dcm')
-
 
 
 if __name__ == "__main__":

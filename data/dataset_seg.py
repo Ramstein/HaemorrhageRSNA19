@@ -1,12 +1,12 @@
+import os
+import random
 from glob import glob
 from pathlib import Path
-import random
 
 import albumentations
 import albumentations.pytorch
 import cv2
 import numpy as np
-import os
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
@@ -58,11 +58,11 @@ class IntracranialDataset(Dataset):
         if self.config.negative_data_steps is None or not self.use_negatives:
             return 0
 
-        if self.global_step_counter/self.config.batch_size < self.config.negative_data_steps[0]:
+        if self.global_step_counter / self.config.batch_size < self.config.negative_data_steps[0]:
             return 0
-        elif self.global_step_counter/self.config.batch_size < self.config.negative_data_steps[1]:
+        elif self.global_step_counter / self.config.batch_size < self.config.negative_data_steps[1]:
             return 0.15
-        elif self.global_step_counter/self.config.batch_size < self.config.negative_data_steps[2]:
+        elif self.global_step_counter / self.config.batch_size < self.config.negative_data_steps[2]:
             return 0.30
         else:
             return 0.40
@@ -78,7 +78,7 @@ class IntracranialDataset(Dataset):
             dir_path = Path(self.negative_data.sample()['path'].values[0].replace('rsna/', ''))
             dir_path = self.config.data_root / dir_path / '3d'
             num_slices = len(list(dir_path.iterdir()))
-            path = str(dir_path / '{:03d}'.format(random.randint(0, num_slices-1)))
+            path = str(dir_path / '{:03d}'.format(random.randint(0, num_slices - 1)))
             if self.config.train_image_size:
                 seg = np.zeros((self.config.train_image_size, self.config.train_image_size))
             else:
@@ -107,8 +107,9 @@ class IntracranialDataset(Dataset):
 
         if self.config.train_image_size:
             margin = int((self.config.train_image_size - self.config.pre_crop_size) / 2)
-            slices_image = np.full((self.config.num_slices, self.config.train_image_size, self.config.train_image_size), _HU_AIR)
-            slices_image[:, margin:margin+self.config.pre_crop_size, margin:margin+self.config.pre_crop_size] = \
+            slices_image = np.full((self.config.num_slices, self.config.train_image_size, self.config.train_image_size),
+                                   _HU_AIR)
+            slices_image[:, margin:margin + self.config.pre_crop_size, margin:margin + self.config.pre_crop_size] = \
                 load_scan_2dc(middle_img_path, slices_indices, self.config.pre_crop_size)
         else:
             slices_image = load_scan_2dc(middle_img_path, slices_indices, self.config.pre_crop_size)
@@ -116,7 +117,7 @@ class IntracranialDataset(Dataset):
             if self.config.train_image_size:
                 margin = int((self.config.train_image_size - self.config.pre_crop_size) / 2)
                 seg = np.zeros((self.config.train_image_size, self.config.train_image_size))
-                seg[margin:margin+self.config.pre_crop_size, margin:margin+self.config.pre_crop_size] = \
+                seg[margin:margin + self.config.pre_crop_size, margin:margin + self.config.pre_crop_size] = \
                     load_seg_slice(seg_path, meta_path, middle_img_num, self.config.pre_crop_size)
             else:
                 seg = load_seg_slice(seg_path, meta_path, middle_img_num, self.config.pre_crop_size)

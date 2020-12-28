@@ -1,9 +1,9 @@
+from functools import partial
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-import math
-from functools import partial
 
 __all__ = [
     'ResNet', 'resnet10', 'resnet18', 'resnet34', 'resnet50', 'resnet101',
@@ -128,7 +128,7 @@ class ResNet(nn.Module):
             stride=(2, 2, 2),
             padding=(3, 3, 3),
             bias=False)
-            
+
         self.bn1 = nn.BatchNorm3d(64)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool3d(kernel_size=(3, 3, 3), stride=2, padding=1)
@@ -205,12 +205,13 @@ class ResNet(nn.Module):
 
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-        
+
         if self.dropout is not None:
             x = self.dropout(x)
 
         x = self.fc(x)
         return x
+
 
 def resnet10(**kwargs):
     """Constructs a ResNet-18 model.

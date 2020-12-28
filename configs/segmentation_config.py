@@ -65,4 +65,3 @@ class Config(BaseConfig):
     # used only if use_cdf is False
     min_hu_value = 20
     max_hu_value = 100
-

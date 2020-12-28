@@ -1,9 +1,8 @@
 import pytorch_lightning as pl
+import segmentation_models_pytorch as smp
 import torch
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import DataLoader
-
-import segmentation_models_pytorch as smp
 
 from data.dataset_seg import IntracranialDataset
 from models.commons.get_base_model import load_base_weights

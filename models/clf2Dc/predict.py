@@ -1,13 +1,14 @@
 import glob
 import json
+import os
 from pathlib import Path
 
 import albumentations
 import cv2
 import numpy as np
-import os
 import pandas as pd
 import torch
+
 torch.multiprocessing.set_sharing_strategy('file_system')
 from torch.nn import functional as F
 from torch.utils.data import DataLoader
@@ -17,10 +18,8 @@ from configs.base_config import BaseConfig
 from data.dataset_2dc import IntracranialDataset
 from models.clf2Dc.classifier2dc import Classifier2DC
 
-
 VAL_SET = '5fold.csv'
 TEST_SET = 'test2.csv'
-
 
 rot_params = {'interpolation': cv2.INTER_LINEAR, 'border_mode': cv2.BORDER_CONSTANT, 'value': 0, 'always_apply': True}
 
@@ -167,6 +166,5 @@ if __name__ == '__main__':
             checkpoint_path = sorted(glob.glob(model_dir + "/models/*.ckpt"))[-1]
 
             for tta in ttas:
-
                 print(f"Calculating predictions for {checkpoint_path}, TTA: {tta}, subset: {subset}")
                 predict(checkpoint_path, gpu, subset, ttas, tta)

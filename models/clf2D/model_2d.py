@@ -1,12 +1,11 @@
 from collections import OrderedDict
 
+import efficientnet_pytorch
+import pretrainedmodels
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
-import pretrainedmodels
 import torchvision
-import efficientnet_pytorch
 
 
 class GWAP(nn.Module):
@@ -26,7 +25,7 @@ class GWAP(nn.Module):
         inputs = inputs[:, :, 1:-1, 1:-1]  # discard borders, TODO: check it's ok for the task
 
         x = self.w1(inputs)
-        m = torch.exp(self.scale*torch.sigmoid(x))
+        m = torch.exp(self.scale * torch.sigmoid(x))
         a = m / torch.sum(m, dim=(2, 3), keepdim=True)
 
         x = a * inputs
@@ -130,7 +129,7 @@ class ClassificationModelResNext(nn.Module):
             self.gwap = GWAP(base_model_features, scale=gwap_scale)
             self.fc = nn.Linear(base_model_features, nb_features)
         else:
-            self.fc = nn.Linear(base_model_features*2, nb_features)
+            self.fc = nn.Linear(base_model_features * 2, nb_features)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -191,7 +190,8 @@ class SeparableConv(nn.Module):
 
 
 class ClassificationModelDPN(nn.Module):
-    def __init__(self, base_model, base_model_features, base_model_l1_outputs, nb_features, nb_input_planes=1, dropout=0.5,
+    def __init__(self, base_model, base_model_features, base_model_l1_outputs, nb_features, nb_input_planes=1,
+                 dropout=0.5,
                  use_gwap=True, gwap_scale=2.0, nb_windows_conv=-1):
         super().__init__()
         self.dropout = dropout
@@ -201,7 +201,8 @@ class ClassificationModelDPN(nn.Module):
         self.nb_windows_conv = nb_windows_conv
 
         if nb_windows_conv == -1:
-            self.l1_4 = nn.Conv2d(nb_input_planes, base_model_l1_outputs, kernel_size=7, stride=2, padding=3, bias=False)
+            self.l1_4 = nn.Conv2d(nb_input_planes, base_model_l1_outputs, kernel_size=7, stride=2, padding=3,
+                                  bias=False)
             self.base_model.features[0].conv = self.l1_4
         else:
             self.l1_4 = nn.Sequential(
@@ -218,7 +219,7 @@ class ClassificationModelDPN(nn.Module):
             self.gwap = GWAP(base_model_features, scale=gwap_scale)
             self.fc = nn.Linear(base_model_features, nb_features)
         else:
-            self.fc = nn.Linear(base_model_features*2, nb_features)
+            self.fc = nn.Linear(base_model_features * 2, nb_features)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -286,7 +287,7 @@ class ClassificationModelMobilenet(nn.Module):
             self.gwap = GWAP(base_model_features, scale=gwap_scale)
             self.fc = nn.Linear(base_model_features, nb_features)
         else:
-            self.fc = nn.Linear(base_model_features*2, nb_features)
+            self.fc = nn.Linear(base_model_features * 2, nb_features)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -334,7 +335,8 @@ class ClassificationModelMobilenet(nn.Module):
 
 
 class ClassificationModelResnet(nn.Module):
-    def __init__(self, base_model, base_model_features,  base_model_l1_outputs, nb_features, nb_input_planes=1, dropout=0.5,
+    def __init__(self, base_model, base_model_features, base_model_l1_outputs, nb_features, nb_input_planes=1,
+                 dropout=0.5,
                  use_gwap=True, gwap_scale=2.0, nb_windows_conv=-1):
         super().__init__()
         self.dropout = dropout
@@ -344,7 +346,8 @@ class ClassificationModelResnet(nn.Module):
         self.nb_windows_conv = nb_windows_conv
 
         if nb_windows_conv > 0:
-            self.windows_conv = nn.Conv2d(nb_input_planes, nb_windows_conv, kernel_size=1, stride=1, padding=1, groups=1, bias=True)
+            self.windows_conv = nn.Conv2d(nb_input_planes, nb_windows_conv, kernel_size=1, stride=1, padding=1,
+                                          groups=1, bias=True)
             self.l1 = nn.Conv2d(nb_windows_conv, base_model_l1_outputs, kernel_size=5, stride=2, padding=2, bias=True)
             # torch.nn.init.uniform(self.windows_conv.weight, 2, 10)
             # torch.nn.init.uniform(self.windows_conv.weight, -1, 1)
@@ -355,7 +358,7 @@ class ClassificationModelResnet(nn.Module):
             self.gwap = GWAP(base_model_features, scale=gwap_scale)
             self.fc = nn.Linear(base_model_features, nb_features)
         else:
-            self.fc = nn.Linear(base_model_features*2, nb_features)
+            self.fc = nn.Linear(base_model_features * 2, nb_features)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -415,7 +418,8 @@ class ClassificationModelResnet(nn.Module):
 
 
 class ClassificationModelVGG(nn.Module):
-    def __init__(self, base_model, base_model_features,  base_model_l1_outputs, nb_features, nb_input_planes=1, dropout=0.5,
+    def __init__(self, base_model, base_model_features, base_model_l1_outputs, nb_features, nb_input_planes=1,
+                 dropout=0.5,
                  use_gwap=True, gwap_scale=2.0):
         super().__init__()
         self.dropout = dropout
@@ -430,7 +434,7 @@ class ClassificationModelVGG(nn.Module):
             self.gwap = GWAP(base_model_features, scale=gwap_scale)
             self.fc = nn.Linear(base_model_features, nb_features)
         else:
-            self.fc = nn.Linear(base_model_features*2, nb_features)
+            self.fc = nn.Linear(base_model_features * 2, nb_features)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -475,7 +479,8 @@ class ClassificationModelVGG(nn.Module):
 
 
 class ClassificationModelEfficientNet(nn.Module):
-    def __init__(self, base_model, base_model_features,  base_model_l1_outputs, nb_features, nb_input_planes=1, dropout=0.5,
+    def __init__(self, base_model, base_model_features, base_model_l1_outputs, nb_features, nb_input_planes=1,
+                 dropout=0.5,
                  use_gwap=True, gwap_scale=2.0):
         super().__init__()
         self.dropout = dropout
@@ -490,7 +495,7 @@ class ClassificationModelEfficientNet(nn.Module):
             self.gwap = GWAP(base_model_features, scale=gwap_scale)
             self.fc = nn.Linear(base_model_features, nb_features)
         else:
-            self.fc = nn.Linear(base_model_features*2, nb_features)
+            self.fc = nn.Linear(base_model_features * 2, nb_features)
 
     def freeze_encoder(self):
         self.base_model.eval()
@@ -541,7 +546,6 @@ class ClassificationModelEfficientNet(nn.Module):
             return out
 
 
-
 def classification_model_se_resnext50_gwap(**kwargs):
     base_model = pretrainedmodels.se_resnext50_32x4d()
     return ClassificationModelResNextGWAP(base_model, nb_features=6, **kwargs)
@@ -573,10 +577,10 @@ def classification_model_dpn68b(**kwargs):
 def classification_model_mobilenet_v2(**kwargs):
     base_model = torchvision.models.mobilenet_v2(pretrained=True)
     return ClassificationModelMobilenet(base_model,
-                                  base_model_features=1280,
-                                  nb_features=6,
-                                  base_model_l1_outputs=32,
-                                  **kwargs)
+                                        base_model_features=1280,
+                                        nb_features=6,
+                                        base_model_l1_outputs=32,
+                                        **kwargs)
 
 
 def classification_model_resnet34(**kwargs):

@@ -1,8 +1,7 @@
+import pretrainedmodels
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
-import pretrainedmodels
 
 
 def avg_max_pool_2d(x):
@@ -22,6 +21,7 @@ class SeparableConv(nn.Module):
         out = self.depthwise(x)
         out = self.pointwise(out)
         return out
+
 
 class DecoderBlock(nn.Module):
     def __init__(self, in_channels, out_channels, level):
@@ -148,7 +148,7 @@ class ClassificationModelResnetCombineLastVariable(nn.Module):
         else:
             slice_offset = (self.nb_input_slices - nb_input_slices) // 2
             x = F.conv3d(x,
-                         conv.weight[:, :, slice_offset:slice_offset+nb_input_slices, :, :],
+                         conv.weight[:, :, slice_offset:slice_offset + nb_input_slices, :, :],
                          conv.bias)
 
         x = x.view(batch_size, x.shape[1], x.shape[3], x.shape[4])
@@ -159,7 +159,7 @@ class ClassificationModelResnetCombineLastVariable(nn.Module):
         nb_input_slices = inputs.shape[1]
 
         x = inputs
-        x = x.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+        x = x.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
         x = self.l1(x)
         x = self.bn1(x)
         x = torch.relu(x)
@@ -269,7 +269,7 @@ class ClassificationModelResnetCombineLastVariable2(nn.Module):
         else:
             slice_offset = (self.nb_input_slices - nb_input_slices) // 2
             x = F.conv3d(x,
-                         conv.weight[:, :, slice_offset:slice_offset+nb_input_slices, :, :],
+                         conv.weight[:, :, slice_offset:slice_offset + nb_input_slices, :, :],
                          conv.bias)
 
         x = x.view(batch_size, x.shape[1], x.shape[3], x.shape[4])
@@ -280,7 +280,7 @@ class ClassificationModelResnetCombineLastVariable2(nn.Module):
         nb_input_slices = inputs.shape[1]
 
         x = inputs
-        x = x.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+        x = x.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
         x = self.l1(x)
         x = self.bn1(x)
         x = torch.relu(x)
@@ -383,7 +383,7 @@ class ClassificationModelResnetCombineLastVariable3(nn.Module):
         else:
             slice_offset = (self.nb_input_slices - nb_input_slices) // 2
             x = F.conv3d(x,
-                         conv.weight[:, :, slice_offset:slice_offset+nb_input_slices, :, :],
+                         conv.weight[:, :, slice_offset:slice_offset + nb_input_slices, :, :],
                          conv.bias)
 
         x = x.view(batch_size, x.shape[1], x.shape[3], x.shape[4])
@@ -394,7 +394,7 @@ class ClassificationModelResnetCombineLastVariable3(nn.Module):
         nb_input_slices = inputs.shape[1]
 
         x = inputs
-        x = x.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+        x = x.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
         x = self.l1(x)
         x = self.bn1(x)
         x = torch.relu(x)
@@ -497,7 +497,7 @@ class ResnetWeightedSegmentatation(nn.Module):
         else:
             slice_offset = (self.nb_input_slices - nb_input_slices) // 2
             x = F.conv3d(x,
-                         conv.weight[:, :, slice_offset:slice_offset+nb_input_slices, :, :],
+                         conv.weight[:, :, slice_offset:slice_offset + nb_input_slices, :, :],
                          conv.bias)
 
         x = x.view(batch_size, x.shape[1], x.shape[3], x.shape[4])
@@ -508,7 +508,7 @@ class ResnetWeightedSegmentatation(nn.Module):
         nb_input_slices = inputs.shape[1]
 
         x = inputs
-        x = x.view(batch_size*nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
+        x = x.view(batch_size * nb_input_slices, 1, inputs.shape[2], inputs.shape[3])
         x = self.l1(x)
         x = self.bn1(x)
         x = torch.relu(x)
@@ -539,7 +539,7 @@ class ResnetWeightedSegmentatation(nn.Module):
         m = torch.exp(2 * segmentation_low_res)
         a = m / torch.sum(m, dim=(2, 3), keepdim=True)
 
-        x = torch.sum(a*x4_combined, dim=(2, 3))
+        x = torch.sum(a * x4_combined, dim=(2, 3))
 
         # x = avg_max_pool_2d(x4_combined)
 
@@ -607,6 +607,7 @@ def segmentation_model_resnet18_bn_filters8_masked(**kwargs):
         base_model_l1_outputs=64,
         filters=8,
         **kwargs)
+
 
 if __name__ == '__main__':
     import torchsummary

@@ -1,13 +1,12 @@
 import json
-
 import os
 
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 from test_tube import Experiment
 
-from models.clf2Dc.classifier2dc import Classifier2DC
 from configs.clf2Dc import Config
+from models.clf2Dc.classifier2dc import Classifier2DC
 
 
 def main():
