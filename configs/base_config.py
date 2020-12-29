@@ -1,3 +1,6 @@
+import json
+
+
 class BaseConfig:
     nb_folds = 5
 
@@ -20,9 +23,6 @@ class BaseConfig:
 
     n_classes = 6
     csv_root_dir = None
-
-
-import json
 
 
 def get_train_folds(val_folds):

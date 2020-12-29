@@ -1,4 +1,3 @@
-from configs.second_level import Config
 from glob import glob
 
 import numpy as np

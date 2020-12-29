@@ -1,7 +1,7 @@
 import glob
 
-from configs.base_config import get_train_folds, get_val_folds_str
 from configs.base_config import BaseConfig
+from configs.base_config import get_train_folds, get_val_folds_str
 
 
 class Config(BaseConfig):
