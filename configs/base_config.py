@@ -4,12 +4,12 @@ import json
 class BaseConfig:
     nb_folds = 5
 
-    train_dir = '/home/ec2-user/SageMaker/rsna_dataset/rsna19/stage_2_train'
-    test_dir = '/home/ec2-user/SageMaker/rsna_dataset/rsna19/stage_2_test'
-    # test2_dir = '/home/ec2-user/SageMaker/rsna_dataset/rsna19/stage_2_test_images'
-    labels_path = "/home/ec2-user/SageMaker/rsna_dataset/rsna19/stage_2_train.csv"
+    train_dir = '/home/ec2-user/SageMaker/rsna_dataset/rsna/stage_2_train'
+    test_dir = '/home/ec2-user/SageMaker/rsna_dataset/rsna/stage_2_test'
+    # test2_dir = '/home/ec2-user/SageMaker/rsna_dataset/rsna/stage_2_test_images'
+    labels_path = "/home/ec2-user/SageMaker/rsna_dataset/rsna/stage_2_train.csv"
 
-    data_root = "/home/ec2-user/SageMaker/rsna_dataset/rsna19/"
+    data_root = "/home/ec2-user/SageMaker/rsna_dataset/rsna/"
 
     # Used for Dmytro's models
     checkpoints_dir = "/home/ec2-user/SageMaker/output/checkpoints"

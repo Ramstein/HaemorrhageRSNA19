@@ -24,7 +24,7 @@ ID_DF_PATHS_OUT = [
     os.path.join(BaseConfig.data_root, 'id_to_path_stage2-test.pkl')]
 
 
-def main(df_path_in, id_df_path_out):
+def create_sym(df_path_in, id_df_path_out):
     with open(df_path_in, 'rb') as f:
         df = pickle.load(f)
 
@@ -53,6 +53,12 @@ def main(df_path_in, id_df_path_out):
     id_to_path.to_pickle(id_df_path_out)
 
 
-if __name__ == '__main__':
+def main():
     for path_in, path_out in zip(DF_PATHS_IN, ID_DF_PATHS_OUT):
-        main(path_in, path_out)
+        create_sym(path_in, path_out)
+
+
+if __name__ == '__main__':
+
+    for path_in, path_out in zip(DF_PATHS_IN, ID_DF_PATHS_OUT):
+        create_sym(path_in, path_out)
