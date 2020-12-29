@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 
-from configs import load
+from configs.base_config import load
 from configs.segmentation_config import Config
 from data.dataset_seg import IntracranialDataset
 from data.utils import draw_seg, draw_labels
