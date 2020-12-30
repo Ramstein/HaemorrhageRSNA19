@@ -1,7 +1,6 @@
 """
 Script parsing dicom metadata and creating dataframe used later to create directory structure.
 """
-
 import os
 import pickle
 from collections import defaultdict
@@ -46,7 +45,6 @@ def main():
     d = defaultdict(list)
     jobs = [('train', BaseConfig.train_dir), ('test', BaseConfig.test_dir)]
     for subset, subset_dir in jobs:
-        print(subset_dir)
         for root, dirs, files in os.walk(subset_dir):
             for file in tqdm(files):
                 try:
