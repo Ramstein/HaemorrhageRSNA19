@@ -46,6 +46,13 @@ def main():
     jobs = [('train', BaseConfig.train_dir), ('test', BaseConfig.test_dir)]
     for subset, subset_dir in jobs:
         for root, dirs, files in os.walk(subset_dir):
+
+            '''For using the multiprocessing try this'''
+            # p = multiprocessing.Pool()
+            # p.map(read_dicom, files)
+            # p.close()
+            # p.join()
+
             for file in tqdm(files):
                 try:
                     dcm = read_dicom(os.path.join(root, file))
