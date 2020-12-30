@@ -1,4 +1,5 @@
 import argparse
+import multiprocessing
 import os
 
 import albumentations
@@ -11,6 +12,7 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 from apex import amp
+from torch import nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
@@ -49,7 +51,8 @@ def log_metrics(logger, phase, epoch_num, y_hat, y):
         logger.add_scalar(f'{phase}_bce_{class_name}', sklearn.metrics.log_loss(y[:, i], y_hat[:, i]), epoch_num)
 
 
-def train(model_name, fold, run=None, resume_epoch=-1, use_apex=False):
+def train(model_name, fold, run=None,
+          resume_epoch=-1, use_apex=False, num_workers=8):
     model_str = build_model_str(model_name, fold, run)
 
     model_info = MODELS[model_name]
@@ -65,7 +68,6 @@ def train(model_name, fold, run=None, resume_epoch=-1, use_apex=False):
     logger = SummaryWriter(log_dir=tensorboard_dir)
 
     model = model_info.factory(**model_info.args)
-    model = model.cuda()
 
     # try:
     #     torchsummary.summary(model, (4, 512, 512))
@@ -74,8 +76,9 @@ def train(model_name, fold, run=None, resume_epoch=-1, use_apex=False):
     #     raise
     #     pass
 
-    # model = torch.nn.DataParallel(model).cuda()
     model = model.cuda()
+    if torch.cuda.device_count() > 1:
+        model = nn.DataParallel(model, device_ids=[id for id in range(torch.cuda.device_count())])
 
     augmentations = [
         albumentations.ShiftScaleRotate(shift_limit=16. / 256, scale_limit=0.05, rotate_limit=30,
@@ -109,12 +112,14 @@ def train(model_name, fold, run=None, resume_epoch=-1, use_apex=False):
 
     data_loaders = {
         'train': DataLoader(dataset_train,
-                            num_workers=8,
+                            num_workers=num_workers,
                             shuffle=True,
+                            pin_memory=True,
                             batch_size=model_info.batch_size),
         'val': DataLoader(dataset_valid,
                           shuffle=False,
-                          num_workers=8,
+                          num_workers=num_workers,
+                          pin_memory=True,
                           batch_size=model_info.batch_size)
     }
 
@@ -316,7 +321,7 @@ def train(model_name, fold, run=None, resume_epoch=-1, use_apex=False):
                 )
 
 
-def check_heatmap(model_name, fold, epoch, run=None):
+def check_heatmap(model_name, fold, epoch, run=None, num_workers=8):
     model_str = build_model_str(model_name, fold, run)
     model_info = MODELS[model_name]
 
@@ -342,7 +347,8 @@ def check_heatmap(model_name, fold, epoch, run=None):
 
     data_loader = DataLoader(dataset_valid,
                              shuffle=False,
-                             num_workers=16,
+                             pin_memory=True,
+                             num_workers=num_workers,
                              batch_size=batch_size)
 
     data_iter = tqdm(enumerate(data_loader), total=len(data_loader))
@@ -372,7 +378,7 @@ def check_heatmap(model_name, fold, epoch, run=None):
             plt.show()
 
 
-def check_windows(model_name, fold, epoch, run=None):
+def check_windows(model_name, fold, epoch, run=None, num_workers=8):
     model_str = build_model_str(model_name, fold, run)
     model_info = MODELS[model_name]
 
@@ -404,7 +410,8 @@ def check_windows(model_name, fold, epoch, run=None):
 
     data_loader = DataLoader(dataset_valid,
                              shuffle=False,
-                             num_workers=16,
+                             num_workers=num_workers,
+                             pin_memory=True,
                              batch_size=batch_size)
 
     data_iter = tqdm(enumerate(data_loader), total=len(data_loader))
@@ -491,7 +498,8 @@ if __name__ == '__main__':
     parser.add_argument('--fold', type=int, default=-1)
     parser.add_argument('--weights', type=str, default='')
     parser.add_argument('--epoch', type=int, default=-1)
-    parser.add_argument('--apex', action='store_true')
+    parser.add_argument('--epoch', type=int, default=-1)
+    parser.add_argument('-w', '--workers', default=multiprocessing.cpu_count(), type=int, help='Num workers')
 
     parser.add_argument('--resume_weights', type=str, default='')
     parser.add_argument('--resume_epoch', type=int, default=-1)
@@ -502,15 +510,15 @@ if __name__ == '__main__':
     if action == 'train':
         try:
             train(model_name=args.model, run=args.run, fold=args.fold, resume_epoch=args.resume_epoch,
-                  use_apex=args.apex)
+                  use_apex=args.apex, num_workers=args.workers)
         except KeyboardInterrupt:
             pass
 
     if action == 'check_heatmap':
-        check_heatmap(model_name=args.model, run=args.run, fold=args.fold, epoch=args.epoch)
+        check_heatmap(model_name=args.model, run=args.run, fold=args.fold, epoch=args.epoch, num_workers=args.workers)
 
     if action == 'check_windows':
-        check_windows(model_name=args.model, run=args.run, fold=args.fold, epoch=args.epoch)
+        check_windows(model_name=args.model, run=args.run, fold=args.fold, epoch=args.epoch, num_workers=args.workers)
 
     if action == 'check_score':
         check_score(model_name=args.model, run=args.run, fold=args.fold, epoch=args.epoch)

@@ -13,3 +13,5 @@ pretrainedmodels
 vtk
 segmentation-models-pytorch
 transforms3d
+nibabel
+git+https://github.com/NVIDIA/apex
