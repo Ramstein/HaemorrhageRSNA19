@@ -15,7 +15,7 @@ class BaseConfig:
     else:
         SageMakerRoot_dir = "/home/ec2-user/SageMaker/Haemorrhage_dataset"
 
-    data_root = join(SageMakerRoot_dir, 'Haemorrhage_dataset/')
+    data_root = SageMakerRoot_dir
     train_dir = join(SageMakerRoot_dir, 'stage_2_train')
     test_dir = join(SageMakerRoot_dir, 'stage_2_test')
     # test2_dir = join(SageMakerRoot_dir, 'stage_2_test_images')
