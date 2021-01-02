@@ -13,8 +13,7 @@ class BaseConfig:
     if SageMakerTrainingRoot_dir:
         SageMakerRoot_dir = SageMakerTrainingRoot_dir
     else:
-        # SageMakerRoot_dir = "/home/ec2-user/SageMaker/Haemorrhage_dataset"
-        SageMakerRoot_dir = "../input/rsna-intracranial-hemorrhage-detection/rsna-intracranial-hemorrhage-detection/stage_2_test"
+        SageMakerRoot_dir = "/home/ec2-user/SageMaker/Haemorrhage_dataset"
 
     data_root = SageMakerRoot_dir
     train_dir = join(SageMakerRoot_dir, 'stage_2_train')
