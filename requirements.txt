@@ -15,3 +15,4 @@ segmentation-models-pytorch
 transforms3d
 nibabel
 git+https://github.com/NVIDIA/apex
+adabound==0.0.5

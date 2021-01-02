@@ -1,25 +1,33 @@
 import json
+from os.path import join
 
 
 class BaseConfig:
     nb_folds = 5
 
-    train_dir = '/home/ec2-user/SageMaker/rsna_dataset/rsna/stage_2_train'
-    test_dir = '/home/ec2-user/SageMaker/rsna_dataset/rsna/stage_2_test'
-    # test2_dir = '/home/ec2-user/SageMaker/rsna_dataset/rsna/stage_2_test_images'
-    labels_path = "/home/ec2-user/SageMaker/rsna_dataset/rsna/stage_2_train.csv"
+    # SageMakerTrainingRoot_dir = "/opt/ml/code/"  # Here /code/==/IntelCervicalCancer/
+    SageMakerTrainingRoot_dir = ""
 
-    data_root = "/home/ec2-user/SageMaker/rsna_dataset/rsna/"
+    if SageMakerTrainingRoot_dir:
+        SageMakerRoot_dir = SageMakerTrainingRoot_dir
+    else:
+        SageMakerRoot_dir = "/home/ec2-user/SageMaker/HaemorrhageRSNA19"
+
+    data_root = join(SageMakerRoot_dir, 'rsna_dataset/rsna/')
+    train_dir = join(SageMakerRoot_dir, 'rsna_dataset/rsna/stage_2_train')
+    test_dir = join(SageMakerRoot_dir, 'rsna_dataset/rsna/stage_2_test')
+    # test2_dir = join(SageMakerRoot_dir, 'rsna_dataset/rsna/stage_2_test_images')
+    labels_path = join(SageMakerRoot_dir, 'rsna_dataset/rsna/stage_2_train.csv')
 
     # Used for Dmytro's models
-    checkpoints_dir = "/home/ec2-user/SageMaker/output/checkpoints"
-    tensorboard_dir = "/home/ec2-user/SageMaker/output/tensorboard"
-    oof_dir = "/home/ec2-user/SageMaker/output/oof"
-    prediction_dir = "/home/ec2-user/SageMaker/output/prediction"
+    checkpoints_dir = join(SageMakerRoot_dir, 'output/checkpoints')
+    tensorboard_dir = join(SageMakerRoot_dir, 'output/tensorboard')
+    oof_dir = join(SageMakerRoot_dir, 'output/oof')
+    prediction_dir = join(SageMakerRoot_dir, 'output/prediction')
 
     # Used for Brainscan models
-    model_outdir = '/home/ec2-user/SageMaker/model_out/'
-    # model_outdir = "/home/ec2-user/SageMaker/output/prediction"
+    model_outdir = join(SageMakerRoot_dir, 'model_out/')
+    # model_outdir = join(SageMakerRoot_dir, 'output/prediction')
 
     n_classes = 6
     csv_root_dir = None
