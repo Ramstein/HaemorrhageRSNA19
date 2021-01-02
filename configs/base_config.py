@@ -5,19 +5,21 @@ from os.path import join
 class BaseConfig:
     nb_folds = 5
 
-    # SageMakerTrainingRoot_dir = "/opt/ml/code/"  # Here /code/==/IntelCervicalCancer/
+    # SageMakerTrainingRoot_dir = "/opt/ml/code/"  # Here /code/==/IntelCervicalCancer/ '/opt/ml/input/data'
+
+    # SageMakerTrainingRoot_dir = '/opt/ml/input/data'  # Here /code/==/IntelCervicalCancer/
     SageMakerTrainingRoot_dir = ""
 
     if SageMakerTrainingRoot_dir:
         SageMakerRoot_dir = SageMakerTrainingRoot_dir
     else:
-        SageMakerRoot_dir = "/home/ec2-user/SageMaker/HaemorrhageRSNA19"
+        SageMakerRoot_dir = "/home/ec2-user/SageMaker/Haemorrhage_dataset"
 
-    data_root = join(SageMakerRoot_dir, 'rsna_dataset/rsna/')
-    train_dir = join(SageMakerRoot_dir, 'rsna_dataset/rsna/stage_2_train')
-    test_dir = join(SageMakerRoot_dir, 'rsna_dataset/rsna/stage_2_test')
-    # test2_dir = join(SageMakerRoot_dir, 'rsna_dataset/rsna/stage_2_test_images')
-    labels_path = join(SageMakerRoot_dir, 'rsna_dataset/rsna/stage_2_train.csv')
+    data_root = join(SageMakerRoot_dir, 'Haemorrhage_dataset/')
+    train_dir = join(SageMakerRoot_dir, 'stage_2_train')
+    test_dir = join(SageMakerRoot_dir, 'stage_2_test')
+    # test2_dir = join(SageMakerRoot_dir, 'stage_2_test_images')
+    labels_path = join(SageMakerRoot_dir, 'stage_2_train.csv')
 
     # Used for Dmytro's models
     checkpoints_dir = join(SageMakerRoot_dir, 'output/checkpoints')
