@@ -47,6 +47,9 @@ def main():
         for root, dirs, files in os.walk(subset_dir):
             i = 0
             for file in tqdm(files):
+                if i < 160000:
+                    i += 1
+                    continue
                 try:
                     dcm = read_dicom(os.path.join(root, file))
                     for tag in tags:
