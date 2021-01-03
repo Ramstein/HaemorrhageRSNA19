@@ -7,7 +7,7 @@ class BaseConfig:
 
     # SageMakerTrainingRoot_dir = "/opt/ml/code/"  # Here /code/==/IntelCervicalCancer/ '/opt/ml/input/data'
 
-    # SageMakerTrainingRoot_dir = '/opt/ml/input/data'  # Here /code/==/IntelCervicalCancer/
+    # SageMakerTrainingRoot_dir = '/opt/ml/input/data'
     SageMakerTrainingRoot_dir = ""
 
     if SageMakerTrainingRoot_dir:
