@@ -18,6 +18,7 @@ from configs.base_config import BaseConfig
 def create_sym(df_path_in, id_df_path_out):
     with open(df_path_in, 'rb') as f:
         df = pickle.load(f)
+    print("laoded df.pkl file")
 
     id_to_path = defaultdict(list)
 

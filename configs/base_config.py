@@ -21,11 +21,13 @@ class BaseConfig:
     }
     # for prepare_3d_data.py
     ShearParams = namedtuple('ShearParams', 'rad_tilt, minus_center_z')
-    OUT_SIZE = (400, 400)
+    OUT_SIZE = (400, 400)  # only getting used for creation for prepare_3d_data.py
     BG_HU = -2000
 
-    # SageMakerTrainingRoot_dir = '/opt/ml'
-    SageMakerTrainingRoot_dir = ""
+    try:
+        SageMakerTrainingRoot_dir = os.path.dirname(os.environ['SM_MODEL_DIR'])  # '/opt/ml'
+    except:
+        SageMakerTrainingRoot_dir = "input/data/train"
 
     if SageMakerTrainingRoot_dir:
         SageMakerRoot_dir = SageMakerTrainingRoot_dir

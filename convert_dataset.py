@@ -83,6 +83,7 @@ def save_image(path, img, img_orig_hu):
 
 
 def main():
+    # paths = list(glob.glob(BaseConfig.PATH))
     paths = list(glob.glob(BaseConfig.PATH))
 
     with Pool(BaseConfig.WORKERS) as p:
