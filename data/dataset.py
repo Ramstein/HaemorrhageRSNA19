@@ -32,8 +32,7 @@ class IntracranialDataset(Dataset):
                  convert_cdf=False,
                  apply_windows=None,
                  add_segmentation_masks=False,
-                 segmentation_oversample=20
-                 ):
+                 segmentation_oversample=20):
         """
         :param csv_file: path to csv file
         :param folds: list of selected folds
