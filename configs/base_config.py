@@ -1,38 +1,60 @@
 import json
+import multiprocessing
+import os
 from os.path import join
 
 
 class BaseConfig:
     nb_folds = 5
+    n_classes = 6
+    csv_root_dir = None
 
-    # SageMakerTrainingRoot_dir = "/opt/ml/code/"  # Here /code/==/IntelCervicalCancer/ '/opt/ml/input/data'
-
-    # SageMakerTrainingRoot_dir = '/opt/ml/input/data'
+    # SageMakerTrainingRoot_dir = '/opt/ml'
     SageMakerTrainingRoot_dir = ""
+
+    WORKERS = multiprocessing.cpu_count()
+    STEP = 25
+    CLASSES = {
+        "epidural": (255, 237, 0),
+        "intraparenchymal": (212, 36, 0),
+        "intraventricular": (173, 102, 108),
+        "subarachnoid": (0, 48, 114),
+        "subdural": (74, 87, 50)
+    }
 
     if SageMakerTrainingRoot_dir:
         SageMakerRoot_dir = SageMakerTrainingRoot_dir
+        data_root = join(SageMakerRoot_dir, 'input', 'data')
+        train_dir = join(SageMakerRoot_dir, 'input', 'data', 'stage_2_train')
+        test_dir = join(SageMakerRoot_dir, 'input', 'data', 'stage_2_test')
+        labels_path = join(SageMakerRoot_dir, 'input', 'data', 'stage_2_train.csv')
+
+        # Used for Dmytro's models
+        checkpoints_dir = join(os.environ['SM_MODEL_DIR'], 'checkpoints')
+        tensorboard_dir = join(os.environ['SM_MODEL_DIR'], 'tensorboard')
+        oof_dir = join(os.environ['SM_MODEL_DIR'], 'oof')
+        prediction_dir = join(os.environ['SM_MODEL_DIR'], 'prediction')
+
+        # Used for Brainscan models
+        model_outdir = join(os.environ['SM_MODEL_DIR'], 'model_out')
+
     else:
         SageMakerRoot_dir = "/home/ec2-user/SageMaker/Haemorrhage_dataset"
+        data_root = SageMakerRoot_dir
+        train_dir = join(SageMakerRoot_dir, 'stage_2_train')
+        test_dir = join(SageMakerRoot_dir, 'stage_2_test')
+        labels_path = join(SageMakerRoot_dir, 'stage_2_train.csv')
 
-    data_root = SageMakerRoot_dir
-    train_dir = join(SageMakerRoot_dir, 'stage_2_train')
-    test_dir = join(SageMakerRoot_dir, 'stage_2_test')
-    # test2_dir = join(SageMakerRoot_dir, 'stage_2_test_images')
-    labels_path = join(SageMakerRoot_dir, 'stage_2_train.csv')
+        # Used for Dmytro's models
+        checkpoints_dir = join(SageMakerRoot_dir, 'checkpoints')
+        tensorboard_dir = join(SageMakerRoot_dir, 'tensorboard')
+        oof_dir = join(SageMakerRoot_dir, 'oof')
+        prediction_dir = join(SageMakerRoot_dir, 'prediction')
 
-    # Used for Dmytro's models
-    checkpoints_dir = join(SageMakerRoot_dir, 'output/checkpoints')
-    tensorboard_dir = join(SageMakerRoot_dir, 'output/tensorboard')
-    oof_dir = join(SageMakerRoot_dir, 'output/oof')
-    prediction_dir = join(SageMakerRoot_dir, 'output/prediction')
+        # Used for Brainscan models
+        model_outdir = join(SageMakerRoot_dir, 'model_out')
 
-    # Used for Brainscan models
-    model_outdir = join(SageMakerRoot_dir, 'model_out/')
-    # model_outdir = join(SageMakerRoot_dir, 'output/prediction')
-
-    n_classes = 6
-    csv_root_dir = None
+    PATH = os.path.join(data_root, "*/*/dicom/*")
 
 
 def get_train_folds(val_folds):
