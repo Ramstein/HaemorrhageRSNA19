@@ -27,7 +27,7 @@ class BaseConfig:
     try:
         SageMakerTrainingRoot_dir = os.path.dirname(os.environ['SM_MODEL_DIR'])  # '/opt/ml'
     except:
-        SageMakerTrainingRoot_dir = "input/data/train"
+        SageMakerTrainingRoot_dir = ""
 
     if SageMakerTrainingRoot_dir:
         SageMakerRoot_dir = SageMakerTrainingRoot_dir
