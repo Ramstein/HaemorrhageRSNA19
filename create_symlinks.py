@@ -14,15 +14,6 @@ from tqdm import tqdm
 
 from configs.base_config import BaseConfig
 
-DF_PATHS_IN = [
-    os.path.join(BaseConfig.data_root, 'df.pkl'),
-    os.path.join(BaseConfig.data_root, 'df-stage2-test.pkl')]
-
-# dataframe mapping SOPInstanceUID of each dicom to path in new directory structure
-ID_DF_PATHS_OUT = [
-    os.path.join(BaseConfig.data_root, 'id_to_path.pkl'),
-    os.path.join(BaseConfig.data_root, 'id_to_path_stage2-test.pkl')]
-
 
 def create_sym(df_path_in, id_df_path_out):
     with open(df_path_in, 'rb') as f:
@@ -54,11 +45,11 @@ def create_sym(df_path_in, id_df_path_out):
 
 
 def main():
-    for path_in, path_out in zip(DF_PATHS_IN, ID_DF_PATHS_OUT):
+    for path_in, path_out in zip(BaseConfig.DF_PATHS_IN, BaseConfig.ID_DF_PATHS_OUT):
         create_sym(path_in, path_out)
 
 
 if __name__ == '__main__':
 
-    for path_in, path_out in zip(DF_PATHS_IN, ID_DF_PATHS_OUT):
+    for path_in, path_out in zip(BaseConfig.DF_PATHS_IN, BaseConfig.ID_DF_PATHS_OUT):
         create_sym(path_in, path_out)

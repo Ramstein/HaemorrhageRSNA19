@@ -4,7 +4,6 @@ import multiprocessing
 import os
 import shutil
 import traceback
-from collections import namedtuple
 from concurrent.futures import ProcessPoolExecutor
 from glob import glob
 from math import atan
@@ -20,10 +19,6 @@ from vtk.util.numpy_support import vtk_to_numpy
 from configs.base_config import BaseConfig
 from data.utils import crop_scan
 from preprocessing.pydicom_loader import PydicomLoader
-
-ShearParams = namedtuple('ShearParams', 'rad_tilt, minus_center_z')
-OUT_SIZE = (400, 400)
-BG_HU = -2000
 
 loader = PydicomLoader()
 
@@ -53,7 +48,7 @@ class VtkImage:
 
         rad_tilt = atan(z2 / y2)
         center_z = self.reader.GetOutput().GetBounds()[5] / 2
-        self.shear_params = ShearParams(rad_tilt, -center_z)
+        self.shear_params = BaseConfig.ShearParams(rad_tilt, -center_z)
 
         self.scan_dir = scan_dir
         self.spacing = spacing
@@ -80,7 +75,7 @@ class VtkImage:
             # add padding so that origin_x is in the middle of the image
             pad = vtk.vtkImageConstantPad()
             pad.SetInputConnection(self.reader.GetOutputPort())
-            pad.SetConstant(BG_HU)
+            pad.SetConstant(BaseConfig.BG_HU)
 
             # GetExtent() returns a tuple (minX, maxX, minY, maxY, minZ, maxZ)
             extent = list(self.reader.GetOutput().GetExtent())
@@ -104,7 +99,7 @@ class VtkImage:
         reslice.SetResliceTransform(transform)
         reslice.SetInterpolationModeToCubic()
         reslice.AutoCropOutputOn()
-        reslice.SetBackgroundLevel(BG_HU)
+        reslice.SetBackgroundLevel(BaseConfig.BG_HU)
         reslice.Update()
 
         spacings_lists = reslice.GetOutput().GetSpacing()
@@ -182,7 +177,7 @@ def process_scan(scan_dir):
 
     _, y, x = ndimage.measurements.center_of_mass(scan > 0)
     pre_crop_shape = scan.shape
-    scan_cropped = crop_scan(scan, OUT_SIZE, x, y, BG_HU)
+    scan_cropped = crop_scan(scan, BaseConfig.OUT_SIZE, x, y, BaseConfig.BG_HU)
 
     meta = {
         'spacing': spacing,
