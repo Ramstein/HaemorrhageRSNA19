@@ -13,22 +13,11 @@ from multiprocessing import Pool
 import cv2
 import numpy as np
 import pydicom
-import tqdm
+from tqdm import tqdm
 
 from configs.base_config import BaseConfig
 from data.utils import load_labels
 from preprocessing.pydicom_loader import PydicomLoader
-
-WORKERS = 12
-STEP = 25
-PATH = os.path.join(BaseConfig.data_root, "*/*/dicom/*")
-CLASSES = {
-    "epidural": (255, 237, 0),
-    "intraparenchymal": (212, 36, 0),
-    "intraventricular": (173, 102, 108),
-    "subarachnoid": (0, 48, 114),
-    "subdural": (74, 87, 50)
-}
 
 loader = PydicomLoader()
 labels = load_labels()
@@ -55,12 +44,12 @@ def draw_labels(path, img):
 
     # Draw labels in train subset only
     if 'train' in path:
-        for c in CLASSES.keys():
+        for c in BaseConfig.CLASSES.keys():
             if labels.loc[scan_id][c]:
-                cv2.circle(img, (STEP, STEP // 2 + counter * STEP),
-                           STEP // 2, CLASSES[c], -1)
-                cv2.putText(img, c, (2 * STEP, STEP // 2 + counter * STEP),
-                            cv2.FONT_HERSHEY_SIMPLEX, .5, CLASSES[c])
+                cv2.circle(img, (BaseConfig.STEP, BaseConfig.STEP // 2 + counter * BaseConfig.STEP),
+                           BaseConfig.STEP // 2, BaseConfig.CLASSES[c], -1)
+                cv2.putText(img, c, (2 * BaseConfig.STEP, BaseConfig.STEP // 2 + counter * BaseConfig.STEP),
+                            cv2.FONT_HERSHEY_SIMPLEX, .5, BaseConfig.CLASSES[c])
                 counter += 1
 
     # if any(labels.loc[scan_id]):
@@ -94,10 +83,10 @@ def save_image(path, img, img_orig_hu):
 
 
 def main():
-    paths = list(glob.glob(PATH))
+    paths = list(glob.glob(BaseConfig.PATH))
 
-    with Pool(WORKERS) as p:
-        r = list(tqdm.tqdm(p.imap(convert_sample, paths), total=len(paths)))
+    with Pool(BaseConfig.WORKERS) as p:
+        r = list(tqdm(p.imap(convert_sample, paths), total=len(paths)))
 
     # one broken sample, copied train/ID_9180c688de/npy/036.npy to 037.npy
     # convert_sample('/mnt/data_fast/rsna/train/ID_9180c688de/dicom/037.dcm')
