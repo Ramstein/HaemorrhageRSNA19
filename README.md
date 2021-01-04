@@ -86,6 +86,8 @@ In rsna19/data/csv directory you can find a set .csv dataset files defining trai
 
 For training stage 1 models run the following commands for folds 0-4:
 
+### Just train the clf2D_train.py model, dropping the deployment of this model, the size of augmented datasets is going upto 2TB, 
+### Can't handle such a big dataset based the computation level available even with aws best instances like p3.16xlarge
 ```
 $ python models/clf2D/train.py train --model resnet18_400 --fold 0
 $ python models/clf2D/train.py train --model resnet34_400_5_planes_combine_last_var_dr0 --fold 0
