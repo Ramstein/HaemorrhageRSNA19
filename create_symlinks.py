@@ -30,8 +30,14 @@ def create_sym(df_path_in, id_df_path_out):
         os.makedirs(study_dir)
 
         # sort by z value
-        dicoms_df = dicoms_df.iloc[np.argsort([float(pos[2]) for pos in dicoms_df.ImagePositionPatient])]
-
+        try:
+            dicoms_df = dicoms_df.iloc[np.argsort([float(pos[2]) for pos in dicoms_df.ImagePositionPatient])]
+        except Exception as e:
+            print(e)
+            try:
+                dicoms_df = dicoms_df.iloc[np.argsort([pos[2] for pos in dicoms_df.ImagePositionPatient])]
+            except Exception as e:
+                print(e)
         for i, row in enumerate(dicoms_df.itertuples()):
             target_path = row.path
             link_name = os.path.join(study_dir, f'{i:03d}.dcm')
